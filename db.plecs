@@ -1,0 +1,50 @@
+using flecs.components.gui
+using flecs.components.graphics
+using flecs.components.geometry
+using flecs.components.transform
+using flecs.components.physics
+
+// Prefabs
+with Prefab {
+  /// Shiny material
+  shiny = Specular{ specular_power: 0.7, shininess: 1.0 }
+
+  /// Simple box
+  box = Box{0.5, 0.5, 0.5}
+
+  /// Green color
+  green = Rgb{0.25, 0.9, 0.5}
+
+  /// Rotating object
+  rotating = AngularVelocity{0.2, 0.4, 0.1}
+}
+
+// Instance
+b : shiny, green, rotating, box {
+  Position3 = {0, 0, 0}
+  Rotation3 = {0, 0, 0}
+}
+
+
+// App
+light = DirectionalLight{
+  direction: [0.5, -0.4, 1.0],
+  color: [0.7, 0.7, 0.7]
+}
+
+camera = Camera{
+  position: [0.0, -0.4, 1.0]
+}
+
+canvas {
+  Canvas = {
+    title: "Flecs Playground",
+    width: 800,
+    height: 600
+    background_color: {0.0627, 0.066, 0.0826},
+    ambient_light: {0.01, 0.01, 0.01},
+
+    directional_light: light,
+    camera: camera
+  }
+}

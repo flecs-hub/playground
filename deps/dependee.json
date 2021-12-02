@@ -1,0 +1,25 @@
+{
+    "lang.c": {
+        "${os linux}": {
+            "lib": [
+                "rt",
+                "pthread"
+            ]
+        },
+        "${os windows}": {
+            "defines": [
+                "_WINDOWS",
+                "_USRDLL",
+                "CGLM_EXPORTS",
+                "CGLM_DLL"
+            ]
+        },
+        "${os darwin}": {
+            "ldflags": [
+                "-framework Cocoa",
+                "-framework QuartzCore",
+                "-framework OpenGL"
+            ]
+        }
+    }
+}

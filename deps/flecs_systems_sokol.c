@@ -16,7 +16,11 @@
 #define SOKOL_NO_ENTRY
 
 /* Select graphics API implementation */
+#ifdef __EMSCRIPTEN__
+#define SOKOL_GLES3
+#else
 #define SOKOL_GLCORE33
+#endif
 
 #if defined(SOKOL_IMPL) && !defined(SOKOL_GFX_IMPL)
 #define SOKOL_GFX_IMPL

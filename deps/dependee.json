@@ -3,7 +3,8 @@
         "${os linux}": {
             "lib": [
                 "rt",
-                "pthread"
+                "pthread",
+                "m"
             ]
         },
         "${os windows}": {

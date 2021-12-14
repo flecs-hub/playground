@@ -2102,212 +2102,35 @@ glmc_rotate2d_to(mat3 m, float angle, mat3 dest);
 
 CGLM_EXPORT
 void
-glmc_quat_identity(versor q) {
-  glm_quat_identity(q);
+glmc_frustum_planes(mat4 m, vec4 dest[6]) {
+  glm_frustum_planes(m, dest);
 }
 
 CGLM_EXPORT
 void
-glmc_quat_identity_array(versor * __restrict q, size_t count) {
-  glm_quat_identity_array(q, count);
+glmc_frustum_corners(mat4 invMat, vec4 dest[8]) {
+  glm_frustum_corners(invMat, dest);
 }
 
 CGLM_EXPORT
 void
-glmc_quat_init(versor q, float x, float y, float z, float w) {
-  glm_quat_init(q, x, y, z, w);
+glmc_frustum_center(vec4 corners[8], vec4 dest) {
+  glm_frustum_center(corners, dest);
 }
 
 CGLM_EXPORT
 void
-glmc_quat(versor q, float angle, float x, float y, float z) {
-  glm_quat(q, angle, x, y, z);
+glmc_frustum_box(vec4 corners[8], mat4 m, vec3 box[2]) {
+  glm_frustum_box(corners, m, box);
 }
 
 CGLM_EXPORT
 void
-glmc_quatv(versor q, float angle, vec3 axis) {
-  glm_quatv(q, angle, axis);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_copy(versor q, versor dest) {
-  glm_quat_copy(q, dest);
-}
-
-CGLM_EXPORT
-float
-glmc_quat_norm(versor q) {
-  return glm_quat_norm(q);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_normalize_to(versor q, versor dest) {
-  glm_quat_normalize_to(q, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_normalize(versor q) {
-  glm_quat_normalize(q);
-}
-
-CGLM_EXPORT
-float
-glmc_quat_dot(versor p, versor q) {
-  return glm_quat_dot(p, q);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_conjugate(versor q, versor dest) {
-  glm_quat_conjugate(q, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_inv(versor q, versor dest) {
-  glm_quat_inv(q, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_add(versor p, versor q, versor dest) {
-  glm_quat_add(p, q, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_sub(versor p, versor q, versor dest) {
-  glm_quat_sub(p, q, dest);
-}
-
-CGLM_EXPORT
-float
-glmc_quat_real(versor q) {
-  return glm_quat_real(q);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_imag(versor q, vec3 dest) {
-  glm_quat_imag(q, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_imagn(versor q, vec3 dest) {
-  glm_quat_imagn(q, dest);
-}
-
-CGLM_EXPORT
-float
-glmc_quat_imaglen(versor q) {
-  return glm_quat_imaglen(q);
-}
-
-CGLM_EXPORT
-float
-glmc_quat_angle(versor q) {
-  return glm_quat_angle(q);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_axis(versor q, vec3 dest) {
-  glm_quat_axis(q, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_mul(versor p, versor q, versor dest) {
-  glm_quat_mul(p, q, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_mat4(versor q, mat4 dest) {
-  glm_quat_mat4(q, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_mat4t(versor q, mat4 dest) {
-  glm_quat_mat4t(q, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_mat3(versor q, mat3 dest) {
-  glm_quat_mat3(q, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_mat3t(versor q, mat3 dest) {
-  glm_quat_mat3t(q, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_lerp(versor from, versor to, float t, versor dest) {
-  glm_quat_lerp(from, to, t, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_lerpc(versor from, versor to, float t, versor dest) {
-  glm_quat_lerpc(from, to, t, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_slerp(versor from, versor to, float t, versor dest) {
-  glm_quat_slerp(from, to, t, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_look(vec3 eye, versor ori, mat4 dest) {
-  glm_quat_look(eye, ori, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_for(vec3 dir, vec3 up, versor dest) {
-  glm_quat_for(dir, up, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_forp(vec3 from, vec3 to, vec3 up, versor dest) {
-  glm_quat_forp(from, to, up, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_rotatev(versor q, vec3 v, vec3 dest) {
-  glm_quat_rotatev(q, v, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_rotate(mat4 m, versor q, mat4 dest) {
-  glm_quat_rotate(m, q, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_rotate_at(mat4 model, versor q, vec3 pivot) {
-  glm_quat_rotate_at(model, q, pivot);
-}
-
-CGLM_EXPORT
-void
-glmc_quat_rotate_atm(mat4 m, versor q, vec3 pivot) {
-  glm_quat_rotate_atm(m, q, pivot);
+glmc_frustum_corners_at(vec4  corners[8],
+                        float splitDist,
+                        float farDist,
+                        vec4  planeCorners[4]) {
+  glm_frustum_corners_at(corners, splitDist, farDist, planeCorners);
 }
 
 /*
@@ -2320,820 +2143,20 @@ glmc_quat_rotate_atm(mat4 m, versor q, vec3 pivot) {
 
 CGLM_EXPORT
 float
-glmc_ease_linear(float t) {
-  return glm_ease_linear(t);
+glmc_bezier(float s, float p0, float c0, float c1, float p1) {
+  return glm_bezier(s, p0, c0, c1, p1);
 }
 
 CGLM_EXPORT
 float
-glmc_ease_sine_in(float t) {
-  return glm_ease_sine_in(t);
+glmc_hermite(float s, float p0, float t0, float t1, float p1) {
+  return glm_hermite(s, p0, t0, t1, p1);
 }
 
 CGLM_EXPORT
 float
-glmc_ease_sine_out(float t) {
-  return glm_ease_sine_out(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_sine_inout(float t) {
-  return glm_ease_sine_inout(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_quad_in(float t) {
-  return glm_ease_quad_in(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_quad_out(float t) {
-  return glm_ease_quad_out(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_quad_inout(float t) {
-  return glm_ease_quad_inout(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_cubic_in(float t) {
-  return glm_ease_cubic_in(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_cubic_out(float t) {
-  return glm_ease_cubic_out(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_cubic_inout(float t) {
-  return glm_ease_cubic_inout(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_quart_in(float t) {
-  return glm_ease_quart_in(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_quart_out(float t) {
-  return glm_ease_quart_out(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_quart_inout(float t) {
-  return glm_ease_quart_inout(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_quint_in(float t) {
-  return glm_ease_quint_in(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_quint_out(float t) {
-  return glm_ease_quint_out(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_quint_inout(float t) {
-  return glm_ease_quint_inout(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_exp_in(float t) {
-  return glm_ease_exp_in(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_exp_out(float t) {
-  return glm_ease_exp_out(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_exp_inout(float t) {
-  return glm_ease_exp_inout(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_circ_in(float t) {
-  return glm_ease_circ_in(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_circ_out(float t) {
-  return glm_ease_circ_out(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_circ_inout(float t) {
-  return glm_ease_circ_inout(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_back_in(float t) {
-  return glm_ease_back_in(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_back_out(float t) {
-  return glm_ease_back_out(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_back_inout(float t) {
-  return glm_ease_back_inout(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_elast_in(float t) {
-  return glm_ease_elast_in(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_elast_out(float t) {
-  return glm_ease_elast_out(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_elast_inout(float t) {
-  return glm_ease_elast_inout(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_bounce_out(float t) {
-  return glm_ease_bounce_out(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_bounce_in(float t) {
-  return glm_ease_bounce_in(t);
-}
-
-CGLM_EXPORT
-float
-glmc_ease_bounce_inout(float t) {
-  return glm_ease_bounce_inout(t);
-}
-
-/*
- * Copyright (c), Recep Aslantas.
- *
- * MIT License (MIT), http://opensource.org/licenses/MIT
- * Full license can be found in the LICENSE file
- */
-
-
-CGLM_EXPORT
-void
-glmc_vec4(vec3 v3, float last, vec4 dest) {
-  glm_vec4(v3, last, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_zero(vec4 v) {
-  glm_vec4_zero(v);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_one(vec4 v) {
-  glm_vec4_one(v);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_copy3(vec4 v, vec3 dest) {
-  glm_vec4_copy3(v, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_copy(vec4 v, vec4 dest) {
-  glm_vec4_copy(v, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_ucopy(vec4 v, vec4 dest) {
-  glm_vec4_ucopy(v, dest);
-}
-
-CGLM_EXPORT
-float
-glmc_vec4_dot(vec4 a, vec4 b) {
-  return glm_vec4_dot(a, b);
-}
-
-CGLM_EXPORT
-float
-glmc_vec4_norm(vec4 v) {
-  return glm_vec4_norm(v);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_normalize_to(vec4 v, vec4 dest) {
-  glm_vec4_normalize_to(v, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_normalize(vec4 v) {
-  glm_vec4_normalize(v);
-}
-
-CGLM_EXPORT
-float
-glmc_vec4_norm2(vec4 v) {
-  return glm_vec4_norm2(v);
-}
-
-CGLM_EXPORT
-float
-glmc_vec4_norm_one(vec4 v) {
-  return glm_vec4_norm_one(v);
-}
-
-CGLM_EXPORT
-float
-glmc_vec4_norm_inf(vec4 v) {
-  return glm_vec4_norm_inf(v);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_add(vec4 a, vec4 b, vec4 dest) {
-  glm_vec4_add(a, b, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_adds(vec4 v, float s, vec4 dest) {
-  glm_vec4_adds(v, s, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_sub(vec4 a, vec4 b, vec4 dest) {
-  glm_vec4_sub(a, b, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_subs(vec4 v, float s, vec4 dest) {
-  glm_vec4_subs(v, s, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_mul(vec4 a, vec4 b, vec4 d) {
-  glm_vec4_mul(a, b, d);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_scale(vec4 v, float s, vec4 dest) {
-  glm_vec4_scale(v, s, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_scale_as(vec4 v, float s, vec4 dest) {
-  glm_vec4_scale_as(v, s, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_div(vec4 a, vec4 b, vec4 dest) {
-  glm_vec4_div(a, b, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_divs(vec4 v, float s, vec4 dest) {
-  glm_vec4_divs(v, s, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_addadd(vec4 a, vec4 b, vec4 dest) {
-  glm_vec4_addadd(a, b, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_subadd(vec4 a, vec4 b, vec4 dest) {
-  glm_vec4_subadd(a, b, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_muladd(vec4 a, vec4 b, vec4 dest) {
-  glm_vec4_muladd(a, b, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_muladds(vec4 a, float s, vec4 dest) {
-  glm_vec4_muladds(a, s, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_maxadd(vec4 a, vec4 b, vec4 dest) {
-  glm_vec4_maxadd(a, b, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_minadd(vec4 a, vec4 b, vec4 dest) {
-  glm_vec4_minadd(a, b, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_negate(vec4 v) {
-  glm_vec4_negate(v);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_negate_to(vec4 v, vec4 dest) {
-  glm_vec4_negate_to(v, dest);
-}
-
-CGLM_EXPORT
-float
-glmc_vec4_distance(vec4 a, vec4 b) {
-  return glm_vec4_distance(a, b);
-}
-
-CGLM_EXPORT
-float
-glmc_vec4_distance2(vec4 a, vec4 b) {
-  return glm_vec4_distance2(a, b);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_maxv(vec4 a, vec4 b, vec4 dest) {
-  glm_vec4_maxv(a, b, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_minv(vec4 a, vec4 b, vec4 dest) {
-  glm_vec4_minv(a, b, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_clamp(vec4 v, float minVal, float maxVal) {
-  glm_vec4_clamp(v, minVal, maxVal);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_lerp(vec4 from, vec4 to, float t, vec4 dest) {
-  glm_vec4_lerp(from, to, t, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_lerpc(vec4 from, vec4 to, float t, vec4 dest) {
-  glm_vec4_lerpc(from, to, t, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_step_uni(float edge, vec4 x, vec4 dest) {
-  glm_vec4_step_uni(edge, x, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_step(vec4 edge, vec4 x, vec4 dest) {
-  glm_vec4_step(edge, x, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_smoothstep_uni(float edge0, float edge1, vec4 x, vec4 dest) {
-  glm_vec4_smoothstep_uni(edge0, edge1, x, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_smoothstep(vec4 edge0, vec4 edge1, vec4 x, vec4 dest) {
-  glm_vec4_smoothstep(edge0, edge1, x, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_smoothinterp(vec4 from, vec4 to, float t, vec4 dest) {
-  glm_vec4_smoothinterp(from, to, t, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_smoothinterpc(vec4 from, vec4 to, float t, vec4 dest) {
-  glm_vec4_smoothinterpc(from, to, t, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_cubic(float s, vec4 dest) {
-  glm_vec4_cubic(s, dest);
-}
-
-/* ext */
-
-CGLM_EXPORT
-void
-glmc_vec4_mulv(vec4 a, vec4 b, vec4 d) {
-  glm_vec4_mulv(a, b, d);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_broadcast(float val, vec4 d) {
-  glm_vec4_broadcast(val, d);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_fill(vec4 v, float val) {
-  glm_vec4_fill(v, val);
-}
-
-CGLM_EXPORT
-bool
-glmc_vec4_eq(vec4 v, float val) {
-  return glm_vec4_eq(v, val);
-}
-
-CGLM_EXPORT
-bool
-glmc_vec4_eq_eps(vec4 v, float val) {
-  return glm_vec4_eq_eps(v, val);
-}
-
-CGLM_EXPORT
-bool
-glmc_vec4_eq_all(vec4 v) {
-  return glm_vec4_eq_all(v);
-}
-
-CGLM_EXPORT
-bool
-glmc_vec4_eqv(vec4 a, vec4 b) {
-  return glm_vec4_eqv(a, b);
-}
-
-CGLM_EXPORT
-bool
-glmc_vec4_eqv_eps(vec4 a, vec4 b) {
-  return glm_vec4_eqv_eps(a, b);
-}
-
-CGLM_EXPORT
-float
-glmc_vec4_max(vec4 v) {
-  return glm_vec4_max(v);
-}
-
-CGLM_EXPORT
-float
-glmc_vec4_min(vec4 v) {
-  return glm_vec4_min(v);
-}
-
-CGLM_EXPORT
-bool
-glmc_vec4_isnan(vec4 v) {
-  return glm_vec4_isnan(v);
-}
-
-CGLM_EXPORT
-bool
-glmc_vec4_isinf(vec4 v) {
-  return glm_vec4_isinf(v);
-}
-
-CGLM_EXPORT
-bool
-glmc_vec4_isvalid(vec4 v) {
-  return glm_vec4_isvalid(v);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_sign(vec4 v, vec4 dest) {
-  glm_vec4_sign(v, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_abs(vec4 v, vec4 dest) {
-  glm_vec4_abs(v, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_fract(vec4 v, vec4 dest) {
-  glm_vec4_fract(v, dest);
-}
-
-CGLM_EXPORT
-float
-glmc_vec4_hadd(vec4 v) {
-  return glm_vec4_hadd(v);
-}
-
-CGLM_EXPORT
-void
-glmc_vec4_sqrt(vec4 v, vec4 dest) {
-  glm_vec4_sqrt(v, dest);
-}
-
-/*
- * Copyright (c), Recep Aslantas.
- *
- * MIT License (MIT), http://opensource.org/licenses/MIT
- * Full license can be found in the LICENSE file
- */
-
-
-CGLM_EXPORT
-void
-glmc_translate_make(mat4 m, vec3 v) {
-  glm_translate_make(m, v);
-}
-
-CGLM_EXPORT
-void
-glmc_translate_to(mat4 m, vec3 v, mat4 dest) {
-  glm_translate_to(m, v, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_translate(mat4 m, vec3 v) {
-  glm_translate(m, v);
-}
-
-CGLM_EXPORT
-void
-glmc_translate_x(mat4 m, float to) {
-  glm_translate_x(m, to);
-}
-
-CGLM_EXPORT
-void
-glmc_translate_y(mat4 m, float to) {
-  glm_translate_y(m, to);
-}
-
-CGLM_EXPORT
-void
-glmc_translate_z(mat4 m, float to) {
-  glm_translate_z(m, to);
-}
-
-CGLM_EXPORT
-void
-glmc_scale_make(mat4 m, vec3 v) {
-  glm_scale_make(m, v);
-}
-
-CGLM_EXPORT
-void
-glmc_scale_to(mat4 m, vec3 v, mat4 dest) {
-  glm_scale_to(m, v, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_scale(mat4 m, vec3 v) {
-  glm_scale(m, v);
-}
-
-CGLM_EXPORT
-void
-glmc_scale_uni(mat4 m, float s) {
-  glm_scale_uni(m, s);
-}
-
-CGLM_EXPORT
-void
-glmc_rotate_x(mat4 m, float rad, mat4 dest) {
-  glm_rotate_x(m, rad, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_rotate_y(mat4 m, float rad, mat4 dest) {
-  glm_rotate_y(m, rad, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_rotate_z(mat4 m, float rad, mat4 dest) {
-  glm_rotate_z(m, rad, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_rotate_make(mat4 m, float angle, vec3 axis) {
-  glm_rotate_make(m, angle, axis);
-}
-
-CGLM_EXPORT
-void
-glmc_rotate(mat4 m, float angle, vec3 axis) {
-  glm_rotate(m, angle, axis);
-}
-
-CGLM_EXPORT
-void
-glmc_rotate_at(mat4 m, vec3 pivot, float angle, vec3 axis) {
-  glm_rotate_at(m, pivot, angle, axis);
-}
-
-CGLM_EXPORT
-void
-glmc_rotate_atm(mat4 m, vec3 pivot, float angle, vec3 axis) {
-  glm_rotate_atm(m, pivot, angle, axis);
-}
-
-CGLM_EXPORT
-void
-glmc_decompose_scalev(mat4 m, vec3 s) {
-  glm_decompose_scalev(m, s);
-}
-
-CGLM_EXPORT
-bool
-glmc_uniscaled(mat4 m) {
-  return glm_uniscaled(m);
-}
-
-CGLM_EXPORT
-void
-glmc_decompose_rs(mat4 m, mat4 r, vec3 s) {
-  glm_decompose_rs(m, r, s);
-}
-
-CGLM_EXPORT
-void
-glmc_decompose(mat4 m, vec4 t, mat4 r, vec3 s) {
-  glm_decompose(m, t, r, s);
-}
-
-CGLM_EXPORT
-void
-glmc_mul(mat4 m1, mat4 m2, mat4 dest) {
-  glm_mul(m1, m2, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_mul_rot(mat4 m1, mat4 m2, mat4 dest) {
-  glm_mul_rot(m1, m2, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_inv_tr(mat4 mat) {
-  glm_inv_tr(mat);
-}
-
-/*
- * Copyright (c), Recep Aslantas.
- *
- * MIT License (MIT), http://opensource.org/licenses/MIT
- * Full license can be found in the LICENSE file
- */
-
-
-CGLM_EXPORT
-void
-glmc_mat2_copy(mat2 mat, mat2 dest) {
-  glm_mat2_copy(mat, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_mat2_identity(mat2 mat) {
-  glm_mat2_identity(mat);
-}
-
-CGLM_EXPORT
-void
-glmc_mat2_identity_array(mat2 * __restrict mat, size_t count) {
-  glm_mat2_identity_array(mat, count);
-}
-
-CGLM_EXPORT
-void
-glmc_mat2_zero(mat2 mat) {
-  glm_mat2_zero(mat);
-}
-
-CGLM_EXPORT
-void
-glmc_mat2_mul(mat2 m1, mat2 m2, mat2 dest) {
-  glm_mat2_mul(m1, m2, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_mat2_transpose_to(mat2 m, mat2 dest) {
-  glm_mat2_transpose_to(m, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_mat2_transpose(mat2 m) {
-  glm_mat2_transpose(m);
-}
-
-CGLM_EXPORT
-void
-glmc_mat2_mulv(mat2 m, vec2 v, vec2 dest) {
-  glm_mat2_mulv(m, v, dest);
-}
-
-CGLM_EXPORT
-float
-glmc_mat2_trace(mat2 m) {
-  return glm_mat2_trace(m);
-}
-
-CGLM_EXPORT
-void
-glmc_mat2_scale(mat2 m, float s) {
-  glm_mat2_scale(m, s);
-}
-
-CGLM_EXPORT
-float
-glmc_mat2_det(mat2 mat) {
-  return glm_mat2_det(mat);
-}
-
-CGLM_EXPORT
-void
-glmc_mat2_inv(mat2 mat, mat2 dest) {
-  glm_mat2_inv(mat, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_mat2_swap_col(mat2 mat, int col1, int col2) {
-  glm_mat2_swap_col(mat, col1, col2);
-}
-
-CGLM_EXPORT
-void
-glmc_mat2_swap_row(mat2 mat, int row1, int row2) {
-  glm_mat2_swap_row(mat, row1, row2);
-}
-
-CGLM_EXPORT
-float
-glmc_mat2_rmc(vec2 r, mat2 m, vec2 c) {
-  return glm_mat2_rmc(r, m, c);
+glmc_decasteljau(float prm, float p0, float c0, float c1, float p1) {
+  return glm_decasteljau(prm, p0, c0, c1, p1);
 }
 
 /*
@@ -3148,18 +2171,6 @@ CGLM_EXPORT
 float
 glmc_smc(float s, mat4 m, vec4 c) {
   return glm_smc(s, m, c);
-}
-
-
-CGLM_EXPORT
-bool
-glmc_ray_triangle(vec3   origin,
-                  vec3   direction,
-                  vec3   v0,
-                  vec3   v1,
-                  vec3   v2,
-                  float *d) {
-    return glm_ray_triangle(origin, direction, v0, v1, v2, d);
 }
 
 /*
@@ -3217,74 +2228,20 @@ glmc_versor_print(versor vec,
 
 CGLM_EXPORT
 void
-glmc_translate2d_make(mat3 m, vec2 v) {
-  glm_translate2d_make(m, v);
+glmc_unprojecti(vec3 pos, mat4 invMat, vec4 vp, vec3 dest) {
+  glm_unprojecti(pos, invMat, vp, dest);
 }
 
 CGLM_EXPORT
 void
-glmc_translate2d_to(mat3 m, vec2 v, mat3 dest) {
-  glm_translate2d_to(m, v, dest);
+glmc_unproject(vec3 pos, mat4 m, vec4 vp, vec3 dest) {
+  glm_unproject(pos, m, vp, dest);
 }
 
 CGLM_EXPORT
 void
-glmc_translate2d(mat3 m, vec2 v) {
-  glm_translate2d(m, v);
-}
-
-CGLM_EXPORT
-void
-glmc_translate2d_x(mat3 m, float to) {
-  glm_translate2d_x(m, to);
-}
-
-CGLM_EXPORT
-void
-glmc_translate2d_y(mat3 m, float to) {
-  glm_translate2d_y(m, to);
-}
-
-CGLM_EXPORT
-void
-glmc_scale2d_to(mat3 m, vec2 v, mat3 dest) {
-  glm_scale2d_to(m, v, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_scale2d_make(mat3 m, vec2 v) {
-  glm_scale2d_make(m, v);
-}
-
-CGLM_EXPORT
-void
-glmc_scale2d(mat3 m, vec2 v) {
-  glm_scale2d(m, v);
-}
-
-CGLM_EXPORT
-void
-glmc_scale2d_uni(mat3 m, float s) {
-  glm_scale2d_uni(m, s);
-}
-
-CGLM_EXPORT
-void
-glmc_rotate2d_make(mat3 m, float angle) {
-  glm_rotate2d_make(m, angle);
-}
-
-CGLM_EXPORT
-void
-glmc_rotate2d(mat3 m, float angle) {
-  glm_rotate2d(m, angle);
-}
-
-CGLM_EXPORT
-void
-glmc_rotate2d_to(mat3 m, float angle, mat3 dest) {
-  glm_rotate2d_to(m, angle, dest);
+glmc_project(vec3 pos, mat4 m, vec4 vp, vec3 dest) {
+  glm_project(pos, m, vp, dest);
 }
 
 /*
@@ -3715,20 +2672,977 @@ glmc_vec3_sqrt(vec3 v, vec3 dest) {
 
 CGLM_EXPORT
 void
-glmc_unprojecti(vec3 pos, mat4 invMat, vec4 vp, vec3 dest) {
-  glm_unprojecti(pos, invMat, vp, dest);
+glmc_vec4(vec3 v3, float last, vec4 dest) {
+  glm_vec4(v3, last, dest);
 }
 
 CGLM_EXPORT
 void
-glmc_unproject(vec3 pos, mat4 m, vec4 vp, vec3 dest) {
-  glm_unproject(pos, m, vp, dest);
+glmc_vec4_zero(vec4 v) {
+  glm_vec4_zero(v);
 }
 
 CGLM_EXPORT
 void
-glmc_project(vec3 pos, mat4 m, vec4 vp, vec3 dest) {
-  glm_project(pos, m, vp, dest);
+glmc_vec4_one(vec4 v) {
+  glm_vec4_one(v);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_copy3(vec4 v, vec3 dest) {
+  glm_vec4_copy3(v, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_copy(vec4 v, vec4 dest) {
+  glm_vec4_copy(v, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_ucopy(vec4 v, vec4 dest) {
+  glm_vec4_ucopy(v, dest);
+}
+
+CGLM_EXPORT
+float
+glmc_vec4_dot(vec4 a, vec4 b) {
+  return glm_vec4_dot(a, b);
+}
+
+CGLM_EXPORT
+float
+glmc_vec4_norm(vec4 v) {
+  return glm_vec4_norm(v);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_normalize_to(vec4 v, vec4 dest) {
+  glm_vec4_normalize_to(v, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_normalize(vec4 v) {
+  glm_vec4_normalize(v);
+}
+
+CGLM_EXPORT
+float
+glmc_vec4_norm2(vec4 v) {
+  return glm_vec4_norm2(v);
+}
+
+CGLM_EXPORT
+float
+glmc_vec4_norm_one(vec4 v) {
+  return glm_vec4_norm_one(v);
+}
+
+CGLM_EXPORT
+float
+glmc_vec4_norm_inf(vec4 v) {
+  return glm_vec4_norm_inf(v);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_add(vec4 a, vec4 b, vec4 dest) {
+  glm_vec4_add(a, b, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_adds(vec4 v, float s, vec4 dest) {
+  glm_vec4_adds(v, s, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_sub(vec4 a, vec4 b, vec4 dest) {
+  glm_vec4_sub(a, b, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_subs(vec4 v, float s, vec4 dest) {
+  glm_vec4_subs(v, s, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_mul(vec4 a, vec4 b, vec4 d) {
+  glm_vec4_mul(a, b, d);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_scale(vec4 v, float s, vec4 dest) {
+  glm_vec4_scale(v, s, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_scale_as(vec4 v, float s, vec4 dest) {
+  glm_vec4_scale_as(v, s, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_div(vec4 a, vec4 b, vec4 dest) {
+  glm_vec4_div(a, b, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_divs(vec4 v, float s, vec4 dest) {
+  glm_vec4_divs(v, s, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_addadd(vec4 a, vec4 b, vec4 dest) {
+  glm_vec4_addadd(a, b, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_subadd(vec4 a, vec4 b, vec4 dest) {
+  glm_vec4_subadd(a, b, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_muladd(vec4 a, vec4 b, vec4 dest) {
+  glm_vec4_muladd(a, b, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_muladds(vec4 a, float s, vec4 dest) {
+  glm_vec4_muladds(a, s, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_maxadd(vec4 a, vec4 b, vec4 dest) {
+  glm_vec4_maxadd(a, b, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_minadd(vec4 a, vec4 b, vec4 dest) {
+  glm_vec4_minadd(a, b, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_negate(vec4 v) {
+  glm_vec4_negate(v);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_negate_to(vec4 v, vec4 dest) {
+  glm_vec4_negate_to(v, dest);
+}
+
+CGLM_EXPORT
+float
+glmc_vec4_distance(vec4 a, vec4 b) {
+  return glm_vec4_distance(a, b);
+}
+
+CGLM_EXPORT
+float
+glmc_vec4_distance2(vec4 a, vec4 b) {
+  return glm_vec4_distance2(a, b);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_maxv(vec4 a, vec4 b, vec4 dest) {
+  glm_vec4_maxv(a, b, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_minv(vec4 a, vec4 b, vec4 dest) {
+  glm_vec4_minv(a, b, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_clamp(vec4 v, float minVal, float maxVal) {
+  glm_vec4_clamp(v, minVal, maxVal);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_lerp(vec4 from, vec4 to, float t, vec4 dest) {
+  glm_vec4_lerp(from, to, t, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_lerpc(vec4 from, vec4 to, float t, vec4 dest) {
+  glm_vec4_lerpc(from, to, t, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_step_uni(float edge, vec4 x, vec4 dest) {
+  glm_vec4_step_uni(edge, x, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_step(vec4 edge, vec4 x, vec4 dest) {
+  glm_vec4_step(edge, x, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_smoothstep_uni(float edge0, float edge1, vec4 x, vec4 dest) {
+  glm_vec4_smoothstep_uni(edge0, edge1, x, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_smoothstep(vec4 edge0, vec4 edge1, vec4 x, vec4 dest) {
+  glm_vec4_smoothstep(edge0, edge1, x, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_smoothinterp(vec4 from, vec4 to, float t, vec4 dest) {
+  glm_vec4_smoothinterp(from, to, t, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_smoothinterpc(vec4 from, vec4 to, float t, vec4 dest) {
+  glm_vec4_smoothinterpc(from, to, t, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_cubic(float s, vec4 dest) {
+  glm_vec4_cubic(s, dest);
+}
+
+/* ext */
+
+CGLM_EXPORT
+void
+glmc_vec4_mulv(vec4 a, vec4 b, vec4 d) {
+  glm_vec4_mulv(a, b, d);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_broadcast(float val, vec4 d) {
+  glm_vec4_broadcast(val, d);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_fill(vec4 v, float val) {
+  glm_vec4_fill(v, val);
+}
+
+CGLM_EXPORT
+bool
+glmc_vec4_eq(vec4 v, float val) {
+  return glm_vec4_eq(v, val);
+}
+
+CGLM_EXPORT
+bool
+glmc_vec4_eq_eps(vec4 v, float val) {
+  return glm_vec4_eq_eps(v, val);
+}
+
+CGLM_EXPORT
+bool
+glmc_vec4_eq_all(vec4 v) {
+  return glm_vec4_eq_all(v);
+}
+
+CGLM_EXPORT
+bool
+glmc_vec4_eqv(vec4 a, vec4 b) {
+  return glm_vec4_eqv(a, b);
+}
+
+CGLM_EXPORT
+bool
+glmc_vec4_eqv_eps(vec4 a, vec4 b) {
+  return glm_vec4_eqv_eps(a, b);
+}
+
+CGLM_EXPORT
+float
+glmc_vec4_max(vec4 v) {
+  return glm_vec4_max(v);
+}
+
+CGLM_EXPORT
+float
+glmc_vec4_min(vec4 v) {
+  return glm_vec4_min(v);
+}
+
+CGLM_EXPORT
+bool
+glmc_vec4_isnan(vec4 v) {
+  return glm_vec4_isnan(v);
+}
+
+CGLM_EXPORT
+bool
+glmc_vec4_isinf(vec4 v) {
+  return glm_vec4_isinf(v);
+}
+
+CGLM_EXPORT
+bool
+glmc_vec4_isvalid(vec4 v) {
+  return glm_vec4_isvalid(v);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_sign(vec4 v, vec4 dest) {
+  glm_vec4_sign(v, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_abs(vec4 v, vec4 dest) {
+  glm_vec4_abs(v, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_fract(vec4 v, vec4 dest) {
+  glm_vec4_fract(v, dest);
+}
+
+CGLM_EXPORT
+float
+glmc_vec4_hadd(vec4 v) {
+  return glm_vec4_hadd(v);
+}
+
+CGLM_EXPORT
+void
+glmc_vec4_sqrt(vec4 v, vec4 dest) {
+  glm_vec4_sqrt(v, dest);
+}
+
+/*
+ * Copyright (c), Recep Aslantas.
+ *
+ * MIT License (MIT), http://opensource.org/licenses/MIT
+ * Full license can be found in the LICENSE file
+ */
+
+
+CGLM_EXPORT
+void
+glmc_plane_normalize(vec4 plane) {
+  glm_plane_normalize(plane);
+}
+
+/*
+ * Copyright (c), Recep Aslantas.
+ *
+ * MIT License (MIT), http://opensource.org/licenses/MIT
+ * Full license can be found in the LICENSE file
+ */
+
+
+CGLM_EXPORT
+void
+glmc_translate_make(mat4 m, vec3 v) {
+  glm_translate_make(m, v);
+}
+
+CGLM_EXPORT
+void
+glmc_translate_to(mat4 m, vec3 v, mat4 dest) {
+  glm_translate_to(m, v, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_translate(mat4 m, vec3 v) {
+  glm_translate(m, v);
+}
+
+CGLM_EXPORT
+void
+glmc_translate_x(mat4 m, float to) {
+  glm_translate_x(m, to);
+}
+
+CGLM_EXPORT
+void
+glmc_translate_y(mat4 m, float to) {
+  glm_translate_y(m, to);
+}
+
+CGLM_EXPORT
+void
+glmc_translate_z(mat4 m, float to) {
+  glm_translate_z(m, to);
+}
+
+CGLM_EXPORT
+void
+glmc_scale_make(mat4 m, vec3 v) {
+  glm_scale_make(m, v);
+}
+
+CGLM_EXPORT
+void
+glmc_scale_to(mat4 m, vec3 v, mat4 dest) {
+  glm_scale_to(m, v, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_scale(mat4 m, vec3 v) {
+  glm_scale(m, v);
+}
+
+CGLM_EXPORT
+void
+glmc_scale_uni(mat4 m, float s) {
+  glm_scale_uni(m, s);
+}
+
+CGLM_EXPORT
+void
+glmc_rotate_x(mat4 m, float rad, mat4 dest) {
+  glm_rotate_x(m, rad, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_rotate_y(mat4 m, float rad, mat4 dest) {
+  glm_rotate_y(m, rad, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_rotate_z(mat4 m, float rad, mat4 dest) {
+  glm_rotate_z(m, rad, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_rotate_make(mat4 m, float angle, vec3 axis) {
+  glm_rotate_make(m, angle, axis);
+}
+
+CGLM_EXPORT
+void
+glmc_rotate(mat4 m, float angle, vec3 axis) {
+  glm_rotate(m, angle, axis);
+}
+
+CGLM_EXPORT
+void
+glmc_rotate_at(mat4 m, vec3 pivot, float angle, vec3 axis) {
+  glm_rotate_at(m, pivot, angle, axis);
+}
+
+CGLM_EXPORT
+void
+glmc_rotate_atm(mat4 m, vec3 pivot, float angle, vec3 axis) {
+  glm_rotate_atm(m, pivot, angle, axis);
+}
+
+CGLM_EXPORT
+void
+glmc_decompose_scalev(mat4 m, vec3 s) {
+  glm_decompose_scalev(m, s);
+}
+
+CGLM_EXPORT
+bool
+glmc_uniscaled(mat4 m) {
+  return glm_uniscaled(m);
+}
+
+CGLM_EXPORT
+void
+glmc_decompose_rs(mat4 m, mat4 r, vec3 s) {
+  glm_decompose_rs(m, r, s);
+}
+
+CGLM_EXPORT
+void
+glmc_decompose(mat4 m, vec4 t, mat4 r, vec3 s) {
+  glm_decompose(m, t, r, s);
+}
+
+CGLM_EXPORT
+void
+glmc_mul(mat4 m1, mat4 m2, mat4 dest) {
+  glm_mul(m1, m2, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_mul_rot(mat4 m1, mat4 m2, mat4 dest) {
+  glm_mul_rot(m1, m2, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_inv_tr(mat4 mat) {
+  glm_inv_tr(mat);
+}
+
+/*
+ * Copyright (c), Recep Aslantas.
+ *
+ * MIT License (MIT), http://opensource.org/licenses/MIT
+ * Full license can be found in the LICENSE file
+ */
+
+
+CGLM_EXPORT
+float
+glmc_sphere_radii(vec4 s) {
+  return glm_sphere_radii(s);
+}
+
+CGLM_EXPORT
+void
+glmc_sphere_transform(vec4 s, mat4 m, vec4 dest) {
+  glm_sphere_transform(s, m, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_sphere_merge(vec4 s1, vec4 s2, vec4 dest) {
+  glm_sphere_merge(s1, s2, dest);
+}
+
+CGLM_EXPORT
+bool
+glmc_sphere_sphere(vec4 s1, vec4 s2) {
+  return glm_sphere_sphere(s1, s2);
+}
+
+CGLM_EXPORT
+bool
+glmc_sphere_point(vec4 s, vec3 point) {
+  return glm_sphere_point(s, point);
+}
+
+// This empty file is needed to trick swiftpm to build the header-only version of cglm as swiftpm itself does not support C targets that have no source code files
+/*
+ * Copyright (c), Recep Aslantas.
+ *
+ * MIT License (MIT), http://opensource.org/licenses/MIT
+ * Full license can be found in the LICENSE file
+ */
+
+
+CGLM_EXPORT
+void
+glmc_quat_identity(versor q) {
+  glm_quat_identity(q);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_identity_array(versor * __restrict q, size_t count) {
+  glm_quat_identity_array(q, count);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_init(versor q, float x, float y, float z, float w) {
+  glm_quat_init(q, x, y, z, w);
+}
+
+CGLM_EXPORT
+void
+glmc_quat(versor q, float angle, float x, float y, float z) {
+  glm_quat(q, angle, x, y, z);
+}
+
+CGLM_EXPORT
+void
+glmc_quatv(versor q, float angle, vec3 axis) {
+  glm_quatv(q, angle, axis);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_copy(versor q, versor dest) {
+  glm_quat_copy(q, dest);
+}
+
+CGLM_EXPORT
+float
+glmc_quat_norm(versor q) {
+  return glm_quat_norm(q);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_normalize_to(versor q, versor dest) {
+  glm_quat_normalize_to(q, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_normalize(versor q) {
+  glm_quat_normalize(q);
+}
+
+CGLM_EXPORT
+float
+glmc_quat_dot(versor p, versor q) {
+  return glm_quat_dot(p, q);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_conjugate(versor q, versor dest) {
+  glm_quat_conjugate(q, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_inv(versor q, versor dest) {
+  glm_quat_inv(q, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_add(versor p, versor q, versor dest) {
+  glm_quat_add(p, q, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_sub(versor p, versor q, versor dest) {
+  glm_quat_sub(p, q, dest);
+}
+
+CGLM_EXPORT
+float
+glmc_quat_real(versor q) {
+  return glm_quat_real(q);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_imag(versor q, vec3 dest) {
+  glm_quat_imag(q, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_imagn(versor q, vec3 dest) {
+  glm_quat_imagn(q, dest);
+}
+
+CGLM_EXPORT
+float
+glmc_quat_imaglen(versor q) {
+  return glm_quat_imaglen(q);
+}
+
+CGLM_EXPORT
+float
+glmc_quat_angle(versor q) {
+  return glm_quat_angle(q);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_axis(versor q, vec3 dest) {
+  glm_quat_axis(q, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_mul(versor p, versor q, versor dest) {
+  glm_quat_mul(p, q, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_mat4(versor q, mat4 dest) {
+  glm_quat_mat4(q, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_mat4t(versor q, mat4 dest) {
+  glm_quat_mat4t(q, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_mat3(versor q, mat3 dest) {
+  glm_quat_mat3(q, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_mat3t(versor q, mat3 dest) {
+  glm_quat_mat3t(q, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_lerp(versor from, versor to, float t, versor dest) {
+  glm_quat_lerp(from, to, t, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_lerpc(versor from, versor to, float t, versor dest) {
+  glm_quat_lerpc(from, to, t, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_slerp(versor from, versor to, float t, versor dest) {
+  glm_quat_slerp(from, to, t, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_look(vec3 eye, versor ori, mat4 dest) {
+  glm_quat_look(eye, ori, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_for(vec3 dir, vec3 up, versor dest) {
+  glm_quat_for(dir, up, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_forp(vec3 from, vec3 to, vec3 up, versor dest) {
+  glm_quat_forp(from, to, up, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_rotatev(versor q, vec3 v, vec3 dest) {
+  glm_quat_rotatev(q, v, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_rotate(mat4 m, versor q, mat4 dest) {
+  glm_quat_rotate(m, q, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_rotate_at(mat4 model, versor q, vec3 pivot) {
+  glm_quat_rotate_at(model, q, pivot);
+}
+
+CGLM_EXPORT
+void
+glmc_quat_rotate_atm(mat4 m, versor q, vec3 pivot) {
+  glm_quat_rotate_atm(m, q, pivot);
+}
+
+/*
+ * Copyright (c), Recep Aslantas.
+ *
+ * MIT License (MIT), http://opensource.org/licenses/MIT
+ * Full license can be found in the LICENSE file
+ */
+
+
+CGLM_EXPORT
+void
+glmc_mat2_copy(mat2 mat, mat2 dest) {
+  glm_mat2_copy(mat, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_mat2_identity(mat2 mat) {
+  glm_mat2_identity(mat);
+}
+
+CGLM_EXPORT
+void
+glmc_mat2_identity_array(mat2 * __restrict mat, size_t count) {
+  glm_mat2_identity_array(mat, count);
+}
+
+CGLM_EXPORT
+void
+glmc_mat2_zero(mat2 mat) {
+  glm_mat2_zero(mat);
+}
+
+CGLM_EXPORT
+void
+glmc_mat2_mul(mat2 m1, mat2 m2, mat2 dest) {
+  glm_mat2_mul(m1, m2, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_mat2_transpose_to(mat2 m, mat2 dest) {
+  glm_mat2_transpose_to(m, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_mat2_transpose(mat2 m) {
+  glm_mat2_transpose(m);
+}
+
+CGLM_EXPORT
+void
+glmc_mat2_mulv(mat2 m, vec2 v, vec2 dest) {
+  glm_mat2_mulv(m, v, dest);
+}
+
+CGLM_EXPORT
+float
+glmc_mat2_trace(mat2 m) {
+  return glm_mat2_trace(m);
+}
+
+CGLM_EXPORT
+void
+glmc_mat2_scale(mat2 m, float s) {
+  glm_mat2_scale(m, s);
+}
+
+CGLM_EXPORT
+float
+glmc_mat2_det(mat2 mat) {
+  return glm_mat2_det(mat);
+}
+
+CGLM_EXPORT
+void
+glmc_mat2_inv(mat2 mat, mat2 dest) {
+  glm_mat2_inv(mat, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_mat2_swap_col(mat2 mat, int col1, int col2) {
+  glm_mat2_swap_col(mat, col1, col2);
+}
+
+CGLM_EXPORT
+void
+glmc_mat2_swap_row(mat2 mat, int row1, int row2) {
+  glm_mat2_swap_row(mat, row1, row2);
+}
+
+CGLM_EXPORT
+float
+glmc_mat2_rmc(vec2 r, mat2 m, vec2 c) {
+  return glm_mat2_rmc(r, m, c);
+}
+
+/*
+ * Copyright (c), Recep Aslantas.
+ *
+ * MIT License (MIT), http://opensource.org/licenses/MIT
+ * Full license can be found in the LICENSE file
+ */
+
+
+CGLM_EXPORT
+void
+glmc_translate2d_make(mat3 m, vec2 v) {
+  glm_translate2d_make(m, v);
+}
+
+CGLM_EXPORT
+void
+glmc_translate2d_to(mat3 m, vec2 v, mat3 dest) {
+  glm_translate2d_to(m, v, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_translate2d(mat3 m, vec2 v) {
+  glm_translate2d(m, v);
+}
+
+CGLM_EXPORT
+void
+glmc_translate2d_x(mat3 m, float to) {
+  glm_translate2d_x(m, to);
+}
+
+CGLM_EXPORT
+void
+glmc_translate2d_y(mat3 m, float to) {
+  glm_translate2d_y(m, to);
+}
+
+CGLM_EXPORT
+void
+glmc_scale2d_to(mat3 m, vec2 v, mat3 dest) {
+  glm_scale2d_to(m, v, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_scale2d_make(mat3 m, vec2 v) {
+  glm_scale2d_make(m, v);
+}
+
+CGLM_EXPORT
+void
+glmc_scale2d(mat3 m, vec2 v) {
+  glm_scale2d(m, v);
+}
+
+CGLM_EXPORT
+void
+glmc_scale2d_uni(mat3 m, float s) {
+  glm_scale2d_uni(m, s);
+}
+
+CGLM_EXPORT
+void
+glmc_rotate2d_make(mat3 m, float angle) {
+  glm_rotate2d_make(m, angle);
+}
+
+CGLM_EXPORT
+void
+glmc_rotate2d(mat3 m, float angle) {
+  glm_rotate2d(m, angle);
+}
+
+CGLM_EXPORT
+void
+glmc_rotate2d_to(mat3 m, float angle, mat3 dest) {
+  glm_rotate2d_to(m, angle, dest);
 }
 
 /*
@@ -4062,6 +3976,304 @@ glmc_aabb_sphere(vec3 box[2], vec4 s) {
 
 CGLM_EXPORT
 void
+glmc_mat3_copy(mat3 mat, mat3 dest) {
+  glm_mat3_copy(mat, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_mat3_identity(mat3 mat) {
+  glm_mat3_identity(mat);
+}
+
+CGLM_EXPORT
+void
+glmc_mat3_zero(mat3 mat) {
+  glm_mat3_zero(mat);
+}
+
+CGLM_EXPORT
+void
+glmc_mat3_identity_array(mat3 * __restrict mat, size_t count) {
+  glm_mat3_identity_array(mat, count);
+}
+
+CGLM_EXPORT
+void
+glmc_mat3_mul(mat3 m1, mat3 m2, mat3 dest) {
+  glm_mat3_mul(m1, m2, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_mat3_transpose_to(mat3 m, mat3 dest) {
+  glm_mat3_transpose_to(m, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_mat3_transpose(mat3 m) {
+  glm_mat3_transpose(m);
+}
+
+CGLM_EXPORT
+void
+glmc_mat3_mulv(mat3 m, vec3 v, vec3 dest) {
+  glm_mat3_mulv(m, v, dest);
+}
+
+CGLM_EXPORT
+float
+glmc_mat3_trace(mat3 m) {
+  return glm_mat3_trace(m);
+}
+
+CGLM_EXPORT
+void
+glmc_mat3_quat(mat3 m, versor dest) {
+  glm_mat3_quat(m, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_mat3_scale(mat3 m, float s) {
+  glm_mat3_scale(m, s);
+}
+
+CGLM_EXPORT
+float
+glmc_mat3_det(mat3 mat) {
+  return glm_mat3_det(mat);
+}
+
+CGLM_EXPORT
+void
+glmc_mat3_inv(mat3 mat, mat3 dest) {
+  glm_mat3_inv(mat, dest);
+}
+
+CGLM_EXPORT
+void
+glmc_mat3_swap_col(mat3 mat, int col1, int col2) {
+  glm_mat3_swap_col(mat, col1, col2);
+}
+
+CGLM_EXPORT
+void
+glmc_mat3_swap_row(mat3 mat, int row1, int row2) {
+  glm_mat3_swap_row(mat, row1, row2);
+}
+
+CGLM_EXPORT
+float
+glmc_mat3_rmc(vec3 r, mat3 m, vec3 c) {
+  return glm_mat3_rmc(r, m, c);
+}
+
+/*
+ * Copyright (c), Recep Aslantas.
+ *
+ * MIT License (MIT), http://opensource.org/licenses/MIT
+ * Full license can be found in the LICENSE file
+ */
+
+
+CGLM_EXPORT
+float
+glmc_ease_linear(float t) {
+  return glm_ease_linear(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_sine_in(float t) {
+  return glm_ease_sine_in(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_sine_out(float t) {
+  return glm_ease_sine_out(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_sine_inout(float t) {
+  return glm_ease_sine_inout(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_quad_in(float t) {
+  return glm_ease_quad_in(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_quad_out(float t) {
+  return glm_ease_quad_out(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_quad_inout(float t) {
+  return glm_ease_quad_inout(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_cubic_in(float t) {
+  return glm_ease_cubic_in(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_cubic_out(float t) {
+  return glm_ease_cubic_out(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_cubic_inout(float t) {
+  return glm_ease_cubic_inout(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_quart_in(float t) {
+  return glm_ease_quart_in(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_quart_out(float t) {
+  return glm_ease_quart_out(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_quart_inout(float t) {
+  return glm_ease_quart_inout(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_quint_in(float t) {
+  return glm_ease_quint_in(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_quint_out(float t) {
+  return glm_ease_quint_out(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_quint_inout(float t) {
+  return glm_ease_quint_inout(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_exp_in(float t) {
+  return glm_ease_exp_in(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_exp_out(float t) {
+  return glm_ease_exp_out(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_exp_inout(float t) {
+  return glm_ease_exp_inout(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_circ_in(float t) {
+  return glm_ease_circ_in(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_circ_out(float t) {
+  return glm_ease_circ_out(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_circ_inout(float t) {
+  return glm_ease_circ_inout(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_back_in(float t) {
+  return glm_ease_back_in(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_back_out(float t) {
+  return glm_ease_back_out(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_back_inout(float t) {
+  return glm_ease_back_inout(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_elast_in(float t) {
+  return glm_ease_elast_in(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_elast_out(float t) {
+  return glm_ease_elast_out(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_elast_inout(float t) {
+  return glm_ease_elast_inout(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_bounce_out(float t) {
+  return glm_ease_bounce_out(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_bounce_in(float t) {
+  return glm_ease_bounce_in(t);
+}
+
+CGLM_EXPORT
+float
+glmc_ease_bounce_inout(float t) {
+  return glm_ease_bounce_inout(t);
+}
+
+/*
+ * Copyright (c), Recep Aslantas.
+ *
+ * MIT License (MIT), http://opensource.org/licenses/MIT
+ * Full license can be found in the LICENSE file
+ */
+
+
+CGLM_EXPORT
+void
 glmc_vec2(float * __restrict v, vec2 dest) {
   glm_vec2(v, dest);
 }
@@ -4264,7 +4476,6 @@ glmc_vec2_lerp(vec2 from, vec2 to, float t, vec2 dest) {
   glm_vec2_lerp(from, to, t, dest);
 }
 
-// This empty file is needed to trick swiftpm to build the header-only version of cglm as swiftpm itself does not support C targets that have no source code files
 /*
  * Copyright (c), Recep Aslantas.
  *
@@ -4464,226 +4675,15 @@ glmc_persp_sizes(mat4 proj, float fovy, vec4 dest) {
   glm_persp_sizes(proj, fovy, dest);
 }
 
-/*
- * Copyright (c), Recep Aslantas.
- *
- * MIT License (MIT), http://opensource.org/licenses/MIT
- * Full license can be found in the LICENSE file
- */
-
-
-CGLM_EXPORT
-float
-glmc_bezier(float s, float p0, float c0, float c1, float p1) {
-  return glm_bezier(s, p0, c0, c1, p1);
-}
-
-CGLM_EXPORT
-float
-glmc_hermite(float s, float p0, float t0, float t1, float p1) {
-  return glm_hermite(s, p0, t0, t1, p1);
-}
-
-CGLM_EXPORT
-float
-glmc_decasteljau(float prm, float p0, float c0, float c1, float p1) {
-  return glm_decasteljau(prm, p0, c0, c1, p1);
-}
-
-/*
- * Copyright (c), Recep Aslantas.
- *
- * MIT License (MIT), http://opensource.org/licenses/MIT
- * Full license can be found in the LICENSE file
- */
-
-
-CGLM_EXPORT
-float
-glmc_sphere_radii(vec4 s) {
-  return glm_sphere_radii(s);
-}
-
-CGLM_EXPORT
-void
-glmc_sphere_transform(vec4 s, mat4 m, vec4 dest) {
-  glm_sphere_transform(s, m, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_sphere_merge(vec4 s1, vec4 s2, vec4 dest) {
-  glm_sphere_merge(s1, s2, dest);
-}
 
 CGLM_EXPORT
 bool
-glmc_sphere_sphere(vec4 s1, vec4 s2) {
-  return glm_sphere_sphere(s1, s2);
-}
-
-CGLM_EXPORT
-bool
-glmc_sphere_point(vec4 s, vec3 point) {
-  return glm_sphere_point(s, point);
-}
-
-/*
- * Copyright (c), Recep Aslantas.
- *
- * MIT License (MIT), http://opensource.org/licenses/MIT
- * Full license can be found in the LICENSE file
- */
-
-
-CGLM_EXPORT
-void
-glmc_frustum_planes(mat4 m, vec4 dest[6]) {
-  glm_frustum_planes(m, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_frustum_corners(mat4 invMat, vec4 dest[8]) {
-  glm_frustum_corners(invMat, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_frustum_center(vec4 corners[8], vec4 dest) {
-  glm_frustum_center(corners, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_frustum_box(vec4 corners[8], mat4 m, vec3 box[2]) {
-  glm_frustum_box(corners, m, box);
-}
-
-CGLM_EXPORT
-void
-glmc_frustum_corners_at(vec4  corners[8],
-                        float splitDist,
-                        float farDist,
-                        vec4  planeCorners[4]) {
-  glm_frustum_corners_at(corners, splitDist, farDist, planeCorners);
-}
-
-/*
- * Copyright (c), Recep Aslantas.
- *
- * MIT License (MIT), http://opensource.org/licenses/MIT
- * Full license can be found in the LICENSE file
- */
-
-
-CGLM_EXPORT
-void
-glmc_mat3_copy(mat3 mat, mat3 dest) {
-  glm_mat3_copy(mat, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_mat3_identity(mat3 mat) {
-  glm_mat3_identity(mat);
-}
-
-CGLM_EXPORT
-void
-glmc_mat3_zero(mat3 mat) {
-  glm_mat3_zero(mat);
-}
-
-CGLM_EXPORT
-void
-glmc_mat3_identity_array(mat3 * __restrict mat, size_t count) {
-  glm_mat3_identity_array(mat, count);
-}
-
-CGLM_EXPORT
-void
-glmc_mat3_mul(mat3 m1, mat3 m2, mat3 dest) {
-  glm_mat3_mul(m1, m2, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_mat3_transpose_to(mat3 m, mat3 dest) {
-  glm_mat3_transpose_to(m, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_mat3_transpose(mat3 m) {
-  glm_mat3_transpose(m);
-}
-
-CGLM_EXPORT
-void
-glmc_mat3_mulv(mat3 m, vec3 v, vec3 dest) {
-  glm_mat3_mulv(m, v, dest);
-}
-
-CGLM_EXPORT
-float
-glmc_mat3_trace(mat3 m) {
-  return glm_mat3_trace(m);
-}
-
-CGLM_EXPORT
-void
-glmc_mat3_quat(mat3 m, versor dest) {
-  glm_mat3_quat(m, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_mat3_scale(mat3 m, float s) {
-  glm_mat3_scale(m, s);
-}
-
-CGLM_EXPORT
-float
-glmc_mat3_det(mat3 mat) {
-  return glm_mat3_det(mat);
-}
-
-CGLM_EXPORT
-void
-glmc_mat3_inv(mat3 mat, mat3 dest) {
-  glm_mat3_inv(mat, dest);
-}
-
-CGLM_EXPORT
-void
-glmc_mat3_swap_col(mat3 mat, int col1, int col2) {
-  glm_mat3_swap_col(mat, col1, col2);
-}
-
-CGLM_EXPORT
-void
-glmc_mat3_swap_row(mat3 mat, int row1, int row2) {
-  glm_mat3_swap_row(mat, row1, row2);
-}
-
-CGLM_EXPORT
-float
-glmc_mat3_rmc(vec3 r, mat3 m, vec3 c) {
-  return glm_mat3_rmc(r, m, c);
-}
-
-/*
- * Copyright (c), Recep Aslantas.
- *
- * MIT License (MIT), http://opensource.org/licenses/MIT
- * Full license can be found in the LICENSE file
- */
-
-
-CGLM_EXPORT
-void
-glmc_plane_normalize(vec4 plane) {
-  glm_plane_normalize(plane);
+glmc_ray_triangle(vec3   origin,
+                  vec3   direction,
+                  vec3   v0,
+                  vec3   v1,
+                  vec3   v2,
+                  float *d) {
+    return glm_ray_triangle(origin, direction, v0, v1, v2, d);
 }
 

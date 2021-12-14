@@ -3,7 +3,12 @@
         "${os linux}": {
             "lib": [
                 "rt",
-                "pthread"
+                "pthread",
+                "m",
+                "GL",
+                "X11",
+                "Xi",
+                "Xcursor"
             ]
         },
         "${os windows}": {

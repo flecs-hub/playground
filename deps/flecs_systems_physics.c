@@ -3,23 +3,23 @@
 
 ECS_CTOR(EcsSpatialQuery, ptr, {
     ptr->query = NULL;
-});
+})
 
 ECS_DTOR(EcsSpatialQuery, ptr, {
     if (ptr->query) {
         ecs_squery_free(ptr->query);
     }
-});
+})
 
 ECS_CTOR(EcsSpatialQueryResult, ptr, {
     ptr->results = NULL;
-});
+})
 
 ECS_DTOR(EcsSpatialQueryResult, ptr, {
     if (ptr->results) {
         ecs_vector_free(ptr->results);
     }
-});
+})
 
 static
 void EcsMove2(ecs_iter_t *it) {
@@ -660,7 +660,7 @@ void ecs_octree_findn(
     ecs_assert(ot != NULL, ECS_INVALID_PARAMETER, NULL);
 
     ecs_vector_clear(*result);
-    return cube_findn(&ot->root, ot->center, ot->size / 2, pos, range, result);
+    cube_findn(&ot->root, ot->center, ot->size / 2, pos, range, result);
 }
 
 static

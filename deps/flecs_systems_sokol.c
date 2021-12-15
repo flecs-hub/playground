@@ -27441,11 +27441,17 @@ void sokol_frame_action(sokol_app_ctx_t *ctx) {
 static
 sokol_app_ctx_t sokol_app_ctx;
 
+void DeltaTime(ecs_iter_t *it) {
+    printf("delta time: %f\n", it->delta_time);
+}
+
 static
 int sokol_run_action(
     ecs_world_t *world,
     ecs_app_desc_t *desc)
 {
+    // ECS_SYSTEM(world, DeltaTime, EcsOnUpdate, 0);
+    
     sokol_app_ctx = (sokol_app_ctx_t){
         .world = world,
         .desc = desc
@@ -27479,7 +27485,8 @@ int sokol_run_action(
         .width = width,
         .height = height,
         .high_dpi = true,
-        .alpha = true
+        .alpha = true,
+        .gl_force_gles2 = false
     });
 
     return 0;
@@ -27509,11 +27516,11 @@ typedef struct shadow_vs_uniforms_t {
 static const char *shd_v = 
     SOKOL_SHADER_HEADER
     "uniform mat4 u_mat_vp;\n"
-    "layout(location=0) in vec4 v_position;\n"
+    "layout(location=0) in vec3 v_position;\n"
     "layout(location=1) in mat4 i_mat_m;\n"
     "out vec2 proj_zw;\n"
     "void main() {\n"
-    "  gl_Position = u_mat_vp * i_mat_m * v_position;\n"
+    "  gl_Position = u_mat_vp * i_mat_m * vec4(v_position, 1.0);\n"
     "  proj_zw = gl_Position.zw;\n"
     "}\n";
 
@@ -27788,10 +27795,6 @@ sg_pipeline init_screen_pipeline() {
                 [0] = { .buffer_index=0, .format=SG_VERTEXFORMAT_FLOAT3 },
                 [1] = { .buffer_index=0, .format=SG_VERTEXFORMAT_FLOAT2 }
             }
-        },
-        .depth = {
-            .compare = SG_COMPAREFUNC_LESS_EQUAL,
-            .write_enabled = false
         }
     });
 }
@@ -27799,7 +27802,7 @@ sg_pipeline init_screen_pipeline() {
 sokol_screen_pass_t sokol_init_screen_pass(void) {
     return (sokol_screen_pass_t) {
         .pip = init_screen_pipeline(),
-        .pass_action = sokol_clear_action((ecs_rgb_t){0, 0, 0}, true, true)
+        .pass_action = sokol_clear_action((ecs_rgb_t){0, 0, 0}, false, false)
     };
 }
 
@@ -27899,8 +27902,8 @@ int sokol_effect_add_pass(
         },
         .depth = {
             .pixel_format = SG_PIXELFORMAT_DEPTH,
-            .compare = SG_COMPAREFUNC_LESS_EQUAL,
-            .write_enabled = true
+            .compare = 0,
+            .write_enabled = false
         },
         .colors = {{
             .pixel_format = SG_PIXELFORMAT_RGBA8
@@ -27914,7 +27917,9 @@ int sokol_effect_add_pass(
         .color_attachments[0].image = pass->pass.color_target,
         .depth_stencil_attachment.image = pass->pass.depth_target,
         .label = "fx-pass"
-    }); 
+    });
+
+    pass->pass.pass_action = sokol_clear_action((ecs_rgb_t){0, 0, 0}, false, false);
 
     return fx->pass_count - 1;
 }
@@ -28010,7 +28015,7 @@ const char* sokol_fs_depth(void)
             "vec4 encodeDepth(float v) {\n"
             "    vec4 enc = vec4(1.0, 255.0, 65025.0, 160581375.0) * v;\n"
             "    enc = fract(enc);\n"
-            "    enc -= enc.yzww * vec4(1.0/255.0,1.0/255.0,1.0/255.0,0.0);\n"
+            "    enc -= enc.yzww * vec4(1.0/255.0,1.0/255.0,1.0/255.0,1.0);\n"
             "    return enc;\n"
             "}\n"
 
@@ -28085,7 +28090,7 @@ sokol_offscreen_pass_t sokol_init_depth_pass(
     ecs_rgb_t background_color = {0};
 
     return (sokol_offscreen_pass_t){
-        .pass_action = sokol_clear_action(background_color, true, true),
+        .pass_action = sokol_clear_action(background_color, false, true),
         .pass = sg_make_pass(&(sg_pass_desc){
             .color_attachments[0].image = color_target,
             .depth_stencil_attachment.image = depth_target
@@ -28679,6 +28684,7 @@ sg_pass_action sokol_clear_action(
         action.depth.value = 1.0;
     } else {
         action.depth.action = SG_ACTION_DONTCARE;
+        action.stencil.action = SG_ACTION_DONTCARE;
     }
 
     return action;
@@ -28938,7 +28944,8 @@ void SokolInitRenderer(ecs_iter_t *it) {
     ecs_trace("sokol: library initialized");
 
     sokol_resources_t resources = init_resources();
-    sokol_offscreen_pass_t depth_pass = sokol_init_depth_pass(w, h);
+    sokol_offscreen_pass_t depth_pass = 
+        sokol_init_depth_pass(w, h);
 
     ecs_set(world, SokolRendererInst, SokolRenderer, {
         .canvas = it->entities[0],

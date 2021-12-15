@@ -24,12 +24,6 @@
 #define SOKOL_GLCORE33
 #endif
 
-#ifdef NDEBUG
-#ifndef SOKOL_DEBUG
-#define SOKOL_DEBUG
-#endif
-#endif
-
 #ifndef __EMSCRIPTEN__
 #define SOKOL_SHADER_HEADER SOKOL_SHADER_VERSION SOKOL_SHADER_PRECISION
 #define SOKOL_SHADER_VERSION "#version 330\n"
@@ -38,6 +32,10 @@
 #define SOKOL_SHADER_HEADER SOKOL_SHADER_VERSION SOKOL_SHADER_PRECISION
 #define SOKOL_SHADER_VERSION  "#version 300 es\n"
 #define SOKOL_SHADER_PRECISION "precision mediump float;\n"
+#endif
+
+#ifdef NDEBUG
+#define SOKOL_ASSERT(c)
 #endif
 
 #if defined(SOKOL_IMPL) && !defined(SOKOL_GFX_IMPL)
@@ -27058,7 +27056,7 @@ SOKOL_API_IMPL sg_context_desc sapp_sgcontext(void) {
 #define SOKOL_MAX_EFFECT_INPUTS (8)
 #define SOKOL_MAX_EFFECT_PASS (8)
 #define SOKOL_MAX_EFFECT_PARAMS (32)
-#define SOKOL_SHADOW_MAP_SIZE (4096)
+#define SOKOL_SHADOW_MAP_SIZE (2048)
 
 /* Immutable resources used by different components to avoid duplication */
 typedef struct sokol_resources_t {
@@ -27471,21 +27469,17 @@ int sokol_run_action(
     /* If there is more than one canvas, ignore */
     while (ecs_term_next(&it)) { }
 
-    /* Enable time measurements for getting delta_time */
-    ecs_measure_frame_time(world, true);
-
     ecs_trace("sokol: starting app '%s'", title);
 
     /* Run app */
     sapp_run(&(sapp_desc) {
         .frame_userdata_cb = (void(*)(void*))sokol_frame_action,
         .user_data = &sokol_app_ctx,
-        .sample_count = 2,
-        .gl_force_gles2 = false,
         .window_title = title,
         .width = width,
         .height = height,
-        .high_dpi = true
+        .high_dpi = true,
+        .alpha = true
     });
 
     return 0;
@@ -27826,6 +27820,7 @@ void sokol_run_screen_pass(
     };
 
     sg_apply_bindings(&bind);
+
     sg_draw(0, 6, 1);
     sg_end_pass();    
 }
@@ -28119,6 +28114,7 @@ void depth_draw_instances(
     };
 
     sg_apply_bindings(&bind);
+
     sg_draw(0, geometry->index_count, instances->instance_count);
 }
 
@@ -28150,6 +28146,7 @@ void sokol_run_depth_pass(
             depth_draw_instances(&geometry[b], &geometry[b].emissive);
         }
     }
+
     sg_end_pass();
 }
 
@@ -28166,6 +28163,14 @@ typedef struct scene_fs_uniforms_t {
     vec3 eye_pos;
     float shadow_map_size;
 } scene_fs_uniforms_t;
+
+#define POSITION_I 0
+#define NORMAL_I 1
+#define COLOR_I 2
+#define MATERIAL_I 3
+#define TRANSFORM_I 4
+#define LAYOUT_I_STR(i) #i
+#define LAYOUT(loc) "layout(location=" LAYOUT_I_STR(loc) ") "
 
 sg_pipeline init_scene_pipeline(void) {
     ecs_trace("sokol: initialize scene pipieline");
@@ -28206,21 +28211,21 @@ sg_pipeline init_scene_pipeline(void) {
             SOKOL_SHADER_HEADER
             "uniform mat4 u_mat_vp;\n"
             "uniform mat4 u_light_vp;\n"
-            "layout(location=0) in vec4 v_position;\n"
-            "layout(location=1) in vec3 v_normal;\n"
-            "layout(location=2) in vec4 i_color;\n"
-            "layout(location=3) in vec3 i_material;\n"
-            "layout(location=4) in mat4 i_mat_m;\n"
+            LAYOUT(POSITION_I)  "in vec3 v_position;\n"
+            LAYOUT(NORMAL_I)    "in vec3 v_normal;\n"
+            LAYOUT(COLOR_I)     "in vec4 i_color;\n"
+            LAYOUT(MATERIAL_I)  "in vec3 i_material;\n"
+            LAYOUT(TRANSFORM_I) "in mat4 i_mat_m;\n"
             "out vec4 position;\n"
             "out vec4 light_position;\n"
             "out vec3 normal;\n"
             "out vec4 color;\n"
             "out vec3 material;\n"
-            "flat out uint material_id;\n"
             "void main() {\n"
-            "  gl_Position = u_mat_vp * i_mat_m * v_position;\n"
-            "  light_position = u_light_vp * i_mat_m * v_position;\n"
-            "  position = (i_mat_m * v_position);\n"
+            "  vec4 pos4 = vec4(v_position, 1.0);\n"
+            "  gl_Position = u_mat_vp * i_mat_m * pos4;\n"
+            "  light_position = u_light_vp * i_mat_m * pos4;\n"
+            "  position = (i_mat_m * pos4);\n"
             "  normal = (i_mat_m * vec4(v_normal, 0.0)).xyz;\n"
             "  color = i_color;\n"
             "  material = i_material;\n"
@@ -28269,7 +28274,7 @@ sg_pipeline init_scene_pipeline(void) {
             "  float specular_power = material.x;\n"
             "  float shininess = max(material.y, 1.0);\n"
             "  float emissive = material.z;\n"
-            "  vec4 ambient = vec4(u_light_ambient, 0);\n"
+            "  vec4 ambient = vec4(u_light_ambient, 1.0);\n"
             "  vec3 l = normalize(u_light_direction);\n"
             "  vec3 n = normalize(normal);\n"
             "  float n_dot_l = dot(n, l);\n"
@@ -28286,8 +28291,8 @@ sg_pipeline init_scene_pipeline(void) {
 
             "    float r_dot_v = max(dot(r, v), 0.0);\n"
             "    float l_shiny = pow(r_dot_v * n_dot_l, shininess);\n"
-            "    vec4 l_specular = vec4(specular_power * l_shiny * u_light_color, 0);\n"
-            "    vec4 l_diffuse = vec4(u_light_color, 0) * n_dot_l;\n"
+            "    vec4 l_specular = vec4(specular_power * l_shiny * u_light_color, 1.0);\n"
+            "    vec4 l_diffuse = vec4(u_light_color, 1.0) * n_dot_l;\n"
             "    float l_emissive = emissive + clamp(1.0 - emissive, 0.0, 1.0);\n"
             "    vec4 l_light = l_emissive * (ambient + s * l_diffuse);\n"
 
@@ -28304,27 +28309,27 @@ sg_pipeline init_scene_pipeline(void) {
         .index_type = SG_INDEXTYPE_UINT16,
         .layout = {
             .buffers = {
-                [2] = { .stride = 16, .step_func=SG_VERTEXSTEP_PER_INSTANCE },
-                [3] = { .stride = 12, .step_func=SG_VERTEXSTEP_PER_INSTANCE },
-                [4] = { .stride = 64, .step_func=SG_VERTEXSTEP_PER_INSTANCE }
+                [COLOR_I] =     { .stride = 16, .step_func=SG_VERTEXSTEP_PER_INSTANCE },
+                [MATERIAL_I] =  { .stride = 12, .step_func=SG_VERTEXSTEP_PER_INSTANCE },
+                [TRANSFORM_I] = { .stride = 64, .step_func=SG_VERTEXSTEP_PER_INSTANCE }
             },
 
             .attrs = {
                 /* Static geometry */
-                [0] = { .buffer_index=0, .offset=0,  .format=SG_VERTEXFORMAT_FLOAT3 },
-                [1] = { .buffer_index=1, .offset=0,  .format=SG_VERTEXFORMAT_FLOAT3 },
+                [POSITION_I] =      { .buffer_index=POSITION_I, .offset=0,  .format=SG_VERTEXFORMAT_FLOAT3 },
+                [NORMAL_I] =        { .buffer_index=NORMAL_I, .offset=0,  .format=SG_VERTEXFORMAT_FLOAT3 },
 
                 /* Color buffer (per instance) */
-                [2] = { .buffer_index=2, .offset=0, .format=SG_VERTEXFORMAT_FLOAT4 },
+                [COLOR_I] =         { .buffer_index=COLOR_I, .offset=0, .format=SG_VERTEXFORMAT_FLOAT4 },
 
                 /* Material buffer (per instance) */
-                [3] = { .buffer_index=3, .offset=0, .format=SG_VERTEXFORMAT_FLOAT3 },                
+                [MATERIAL_I] =      { .buffer_index=MATERIAL_I, .offset=0, .format=SG_VERTEXFORMAT_FLOAT3 },
 
                 /* Matrix (per instance) */
-                [4] = { .buffer_index=4, .offset=0,  .format=SG_VERTEXFORMAT_FLOAT4 },
-                [5] = { .buffer_index=4, .offset=16, .format=SG_VERTEXFORMAT_FLOAT4 },
-                [6] = { .buffer_index=4, .offset=32, .format=SG_VERTEXFORMAT_FLOAT4 },
-                [7] = { .buffer_index=4, .offset=48, .format=SG_VERTEXFORMAT_FLOAT4 }
+                [TRANSFORM_I] =     { .buffer_index=TRANSFORM_I, .offset=0,  .format=SG_VERTEXFORMAT_FLOAT4 },
+                [TRANSFORM_I + 1] = { .buffer_index=TRANSFORM_I, .offset=16, .format=SG_VERTEXFORMAT_FLOAT4 },
+                [TRANSFORM_I + 2] = { .buffer_index=TRANSFORM_I, .offset=32, .format=SG_VERTEXFORMAT_FLOAT4 },
+                [TRANSFORM_I + 3] = { .buffer_index=TRANSFORM_I, .offset=48, .format=SG_VERTEXFORMAT_FLOAT4 }
             }
         },
 
@@ -28374,11 +28379,11 @@ void scene_draw_instances(
 
     sg_bindings bind = {
         .vertex_buffers = {
-            [0] = geometry->vertex_buffer,
-            [1] = geometry->normal_buffer,
-            [2] = instances->color_buffer,
-            [3] = instances->material_buffer,
-            [4] = instances->transform_buffer
+            [POSITION_I] =  geometry->vertex_buffer,
+            [NORMAL_I] =    geometry->normal_buffer,
+            [COLOR_I] =     instances->color_buffer,
+            [MATERIAL_I] =  instances->material_buffer,
+            [TRANSFORM_I] = instances->transform_buffer
         },
         .index_buffer = geometry->index_buffer,
         .fs_images[0] = shadow_map
@@ -28423,6 +28428,13 @@ void sokol_run_scene_pass(
     }
     sg_end_pass();
 }
+
+#undef POSITION_I
+#undef NORMAL_I
+#undef COLOR_I
+#undef MATERIAL_I
+#undef TRANSFORM_I
+#undef LAYOUT
 
 
 static
@@ -28935,7 +28947,7 @@ void SokolInitRenderer(ecs_iter_t *it) {
         .shadow_pass = sokol_init_shadow_pass(SOKOL_SHADOW_MAP_SIZE),
         .scene_pass = sokol_init_scene_pass(canvas->background_color, depth_pass.depth_target, w, h),
         .screen_pass = sokol_init_screen_pass(),
-        .fx_bloom = sokol_init_bloom(w * 2, h * 2)
+        .fx_bloom = sokol_init_bloom(w, h)
     });
 
     ecs_trace("sokol: canvas initialized");
@@ -29229,6 +29241,11 @@ void populate_buffer(
         if (!count) {
             instances->instance_count = 0;
         } else {
+            if (count == 1) {
+                /* Instanced pipelines can't work with single instance */
+                count ++;
+            }
+
             /* Fetch materials buffer */
             const SokolMaterials *render_materials = ecs_get(
                 world, SokolRendererInst, SokolMaterials);
@@ -29246,9 +29263,12 @@ void populate_buffer(
             int32_t instance_max = instances->instance_max;
 
             if (instance_count < count) {
-                colors = ecs_os_realloc(colors, colors_size);
-                transforms = ecs_os_realloc(transforms, transforms_size);
-                materials = ecs_os_realloc(materials, materials_size);
+                ecs_os_free(colors);
+                ecs_os_free(transforms);
+                ecs_os_free(materials);
+                colors = ecs_os_calloc(colors_size);
+                transforms = ecs_os_calloc(transforms_size);
+                materials = ecs_os_calloc(materials_size);
             }
 
             /* Copy data into application buffers */

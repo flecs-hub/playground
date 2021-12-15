@@ -27905,22 +27905,15 @@ int sokol_effect_add_pass(
                 [1] = { .buffer_index=0, .format=SG_VERTEXFORMAT_FLOAT2 }
             }
         },
-        .depth = {
-            .pixel_format = SG_PIXELFORMAT_DEPTH,
-            .compare = 0,
-            .write_enabled = false
-        },
         .colors = {{
             .pixel_format = SG_PIXELFORMAT_RGBA8
         }},
     });
 
     pass->pass.color_target = sokol_target_rgba8(pass_desc.width, pass_desc.height);
-    pass->pass.depth_target = sokol_target_depth(pass_desc.width, pass_desc.height);
 
     pass->pass.pass = sg_make_pass(&(sg_pass_desc){
         .color_attachments[0].image = pass->pass.color_target,
-        .depth_stencil_attachment.image = pass->pass.depth_target,
         .label = "fx-pass"
     });
 

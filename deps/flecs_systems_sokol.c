@@ -27056,7 +27056,7 @@ SOKOL_API_IMPL sg_context_desc sapp_sgcontext(void) {
 #define SOKOL_MAX_EFFECT_INPUTS (8)
 #define SOKOL_MAX_EFFECT_PASS (8)
 #define SOKOL_MAX_EFFECT_PARAMS (32)
-#define SOKOL_SHADOW_MAP_SIZE (2048)
+#define SOKOL_SHADOW_MAP_SIZE (1024)
 
 /* Immutable resources used by different components to avoid duplication */
 typedef struct sokol_resources_t {
@@ -27160,6 +27160,8 @@ const char* sokol_fs_depth(void);
 #ifndef SOKOL_EFFECT_H
 #define SOKOL_EFFECT_H
 
+typedef struct sokol_screen_pass_t sokol_screen_pass_t;
+
 typedef struct sokol_fx_pass_input_t {
     const char *name;
     int id;
@@ -27207,7 +27209,10 @@ sg_image sokol_effect_run(
     sokol_resources_t *res,
     SokolEffect *effect,
     int32_t input_count,
-    sg_image inputs[]);
+    sg_image inputs[],
+    sokol_screen_pass_t *screen_pass,
+    int32_t width,
+    int32_t height);
 
 int sokol_effect_add_pass(
     SokolEffect *fx, 
@@ -27216,10 +27221,10 @@ int sokol_effect_add_pass(
 #endif
 
 
-typedef struct sokol_screen_pass_t {
+struct sokol_screen_pass_t {
     sg_pass_action pass_action;
     sg_pipeline pip;
-} sokol_screen_pass_t;
+};
 
 
 /* Internal functions */
@@ -27718,8 +27723,8 @@ SokolEffect sokol_init_bloom(
     ecs_trace("sokol: initialize bloom effect");
 
     SokolEffect fx = sokol_effect_init(1);
-    int blur_w = width * 0.2;
-    int blur_h = height * 0.2;
+    int blur_w = 512;
+    int blur_h = 512;
 
     int threshold_pass = sokol_effect_add_pass(&fx, (sokol_fx_pass_desc_t){
         .width = blur_w, 
@@ -27825,7 +27830,7 @@ void sokol_run_screen_pass(
     sg_apply_bindings(&bind);
 
     sg_draw(0, 6, 1);
-    sg_end_pass();    
+    sg_end_pass();
 }
 
 
@@ -27925,12 +27930,11 @@ int sokol_effect_add_pass(
 }
 
 static
-void effect_pass_draw(
+void effect_draw(
     sokol_resources_t *res,
     SokolEffect *effect,
     sokol_fx_pass_t *fx_pass)
 {
-    sg_begin_pass(fx_pass->pass.pass, &fx_pass->pass.pass_action);
     sg_apply_pipeline(fx_pass->pass.pip);
     
     sg_bindings bind = {
@@ -27948,7 +27952,31 @@ void effect_pass_draw(
     sg_apply_bindings(&bind);
 
     sg_draw(0, 6, 1);
+}
+
+static
+void effect_pass_draw(
+    sokol_resources_t *res,
+    SokolEffect *effect,
+    sokol_fx_pass_t *fx_pass)
+{
+    sg_begin_pass(fx_pass->pass.pass, &fx_pass->pass.pass_action);
+    effect_draw(res, effect, fx_pass);
     sg_end_pass();    
+}
+
+static
+void effect_screen_pass_draw(
+    sokol_resources_t *res,
+    SokolEffect *effect,
+    sokol_fx_pass_t *fx_pass,
+    sokol_screen_pass_t *screen_pass,
+    int32_t width,
+    int32_t height)
+{
+    sg_begin_default_pass(&screen_pass->pass_action, width, height);
+    effect_draw(res, effect, fx_pass);
+    sg_end_pass();
 }
 
 SokolEffect sokol_effect_init(
@@ -27964,7 +27992,10 @@ sg_image sokol_effect_run(
     sokol_resources_t *res,
     SokolEffect *effect,
     int32_t input_count,
-    sg_image inputs[])
+    sg_image inputs[],
+    sokol_screen_pass_t *screen_pass,
+    int32_t width,
+    int32_t height)
 {
     assert(input_count == effect->input_count);
 
@@ -27975,8 +28006,16 @@ sg_image sokol_effect_run(
     }
 
     /* Run passes */
-    for (; i < effect->pass_count; i ++) {
-        effect_pass_draw(res, effect, &effect->pass[i]);
+    if (!screen_pass) {
+        for (; i < effect->pass_count; i ++) {
+            effect_pass_draw(res, effect, &effect->pass[i]);
+        }
+    } else {
+        for (; i < effect->pass_count - 1; i ++) {
+            effect_pass_draw(res, effect, &effect->pass[i]);
+        }
+
+        effect_screen_pass_draw(res, effect, &effect->pass[i], screen_pass, width, height);
     }
 
     return effect->pass[effect->pass_count - 1].pass.color_target;
@@ -28912,10 +28951,10 @@ void SokolRender(ecs_iter_t *it) {
     target = sokol_effect_run(
         &r->resources, &r->fx_bloom, 1, (sg_image[]){
             target
-        });
+        }, &r->screen_pass, state.width, state.height);
 
     /* Present last pass to screen */
-    sokol_run_screen_pass(&r->screen_pass, &r->resources, &state, target);
+    // sokol_run_screen_pass(&r->screen_pass, &r->resources, &state, target);
 }
 
 static

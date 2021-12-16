@@ -27489,8 +27489,10 @@ int sokol_run_action(
         .window_title = title,
         .width = width,
         .height = height,
+        .sample_count = 2,
+#ifndef __EMSCRIPTEN__        
         .high_dpi = true,
-        .alpha = true,
+#endif
         .gl_force_gles2 = false
     });
 
@@ -27905,12 +27907,18 @@ int sokol_effect_add_pass(
                 [1] = { .buffer_index=0, .format=SG_VERTEXFORMAT_FLOAT2 }
             }
         },
+        .depth = {
+            .pixel_format = SG_PIXELFORMAT_NONE,
+            .compare = 0,
+            .write_enabled = false
+        },
         .colors = {{
             .pixel_format = SG_PIXELFORMAT_RGBA8
         }},
     });
 
-    pass->pass.color_target = sokol_target_rgba8(pass_desc.width, pass_desc.height);
+    pass->pass.color_target = sokol_target_rgba8(
+        pass_desc.width, pass_desc.height);
 
     pass->pass.pass = sg_make_pass(&(sg_pass_desc){
         .color_attachments[0].image = pass->pass.color_target,
@@ -28026,35 +28034,35 @@ typedef struct depth_fs_uniforms_t {
 const char* sokol_vs_depth(void) 
 {
     return  SOKOL_SHADER_HEADER
-            "uniform mat4 u_mat_vp;\n"
-            "uniform vec3 u_eye_pos;\n"
-            "layout(location=0) in vec4 v_position;\n"
-            "layout(location=1) in mat4 i_mat_m;\n"
-            "out vec3 position;\n"
-            "void main() {\n"
-            "  gl_Position = u_mat_vp * i_mat_m * v_position;\n"
-            "  position = gl_Position.xyz;\n"
-            "}\n";
+        "uniform mat4 u_mat_vp;\n"
+        "uniform vec3 u_eye_pos;\n"
+        "layout(location=0) in vec4 v_position;\n"
+        "layout(location=1) in mat4 i_mat_m;\n"
+        "out vec3 position;\n"
+        "void main() {\n"
+        "  gl_Position = u_mat_vp * i_mat_m * v_position;\n"
+        "  position = gl_Position.xyz;\n"
+        "}\n";
 }
 
 const char* sokol_fs_depth(void) 
 {
     return  SOKOL_SHADER_HEADER
-            "uniform vec3 u_eye_pos;\n"
-            "in vec3 position;\n"
-            "out vec4 frag_color;\n"
+        "uniform vec3 u_eye_pos;\n"
+        "in vec3 position;\n"
+        "out vec4 frag_color;\n"
 
-            "vec4 encodeDepth(float v) {\n"
-            "    vec4 enc = vec4(1.0, 255.0, 65025.0, 160581375.0) * v;\n"
-            "    enc = fract(enc);\n"
-            "    enc -= enc.yzww * vec4(1.0/255.0,1.0/255.0,1.0/255.0,1.0);\n"
-            "    return enc;\n"
-            "}\n"
+        "vec4 encodeDepth(float v) {\n"
+        "    vec4 enc = vec4(1.0, 255.0, 65025.0, 160581375.0) * v;\n"
+        "    enc = fract(enc);\n"
+        "    enc -= enc.yzww * vec4(1.0/255.0,1.0/255.0,1.0/255.0,0.0);\n"
+        "    return enc;\n"
+        "}\n"
 
-            "void main() {\n"
-            "  float depth = length(position);\n"
-            "  frag_color = encodeDepth(depth);\n"
-            "}\n";
+        "void main() {\n"
+        "  float depth = length(position);\n"
+        "  frag_color = encodeDepth(depth);\n"
+        "}\n";
 }
 
 sg_pipeline init_depth_pipeline(void) {
@@ -28919,6 +28927,7 @@ void SokolRender(ecs_iter_t *it) {
         state.light = ecs_get(world, canvas->directional_light, 
             EcsDirectionalLight);
         init_light_mat_vp(&state);
+
         sokol_run_shadow_pass(&r->shadow_pass, &state);  
     } else {
         /* Set default ambient light if nothing is configured */
@@ -28971,7 +28980,10 @@ void SokolInitRenderer(ecs_iter_t *it) {
     int w = sapp_width();
     int h = sapp_height();
 
-    sg_setup(&(sg_desc) {0});
+    sg_setup(&(sg_desc) {
+        .context.depth_format = SG_PIXELFORMAT_NONE
+    });
+
     assert(sg_isvalid());
     ecs_trace("sokol: library initialized");
 

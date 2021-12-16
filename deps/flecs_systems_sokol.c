@@ -27053,9 +27053,10 @@ SOKOL_API_IMPL sg_context_desc sapp_sgcontext(void) {
 #define FLECS_SYSTEMS_SOKOL_TYPES_H
 
 
-#define SOKOL_MAX_EFFECT_INPUTS (8)
-#define SOKOL_MAX_EFFECT_PASS (8)
-#define SOKOL_MAX_EFFECT_PARAMS (32)
+#define SOKOL_MAX_FX_STEPS (8)
+#define SOKOL_MAX_FX_INPUTS (8)
+#define SOKOL_MAX_FX_PASS (8)
+#define SOKOL_MAX_FX_PARAMS (32)
 #define SOKOL_SHADOW_MAP_SIZE (1024)
 
 /* Immutable resources used by different components to avoid duplication */
@@ -27116,7 +27117,8 @@ typedef struct sokol_offscreen_pass_t {
 
 sg_image sokol_target_rgba8(
     int32_t width, 
-    int32_t height);
+    int32_t height,
+    int32_t sample_count);
 
 sg_image sokol_target_rgba16f(
     int32_t width, 
@@ -27162,37 +27164,50 @@ const char* sokol_fs_depth(void);
 
 typedef struct sokol_screen_pass_t sokol_screen_pass_t;
 
-typedef struct sokol_fx_pass_input_t {
-    const char *name;
-    int id;
-} sokol_fx_pass_input_t;
+/* Fx descriptors */
 
-typedef struct sokol_fx_pass_param_t {
+typedef struct sokol_fx_step_t {
     const char *name;
-    float value;
-} sokol_fx_pass_param_t;
+    int32_t inputs[SOKOL_MAX_FX_INPUTS];
+    float params[SOKOL_MAX_FX_PARAMS];
+} sokol_fx_step_t; 
 
 typedef struct sokol_fx_pass_desc_t {
-    const char *shader;
+    const char *name;
     const char *shader_header;
+    const char *shader;
     int32_t width;
     int32_t height;
-    sokol_fx_pass_input_t inputs[SOKOL_MAX_EFFECT_INPUTS];
-    sokol_fx_pass_param_t params[SOKOL_MAX_EFFECT_PARAMS];
+    int32_t sample_count;
+    int32_t loop_count;
+    const char *inputs[SOKOL_MAX_FX_INPUTS];
+    const char *params[SOKOL_MAX_FX_INPUTS];
+    sokol_fx_step_t steps[SOKOL_MAX_FX_STEPS];
 } sokol_fx_pass_desc_t;
 
+
+/* Fx implementation */
+
 typedef struct sokol_fx_pass_t {
-    sokol_offscreen_pass_t pass;
-    int32_t input_count;
-    int32_t param_count;
-    int32_t inputs[SOKOL_MAX_EFFECT_INPUTS];
-    float params[SOKOL_MAX_EFFECT_PARAMS];
+    const char *name;
     int32_t width;
     int32_t height;
+    int32_t sample_count;
+    int32_t loop_count;
+
+    int32_t step_count;
+    int32_t param_count;
+    int32_t input_count;
+    sokol_fx_step_t steps[SOKOL_MAX_FX_STEPS];
+
+    sg_pipeline pip;
+    sg_image out[2];
+    sg_pass pass[2];
 } sokol_fx_pass_t;
 
 typedef struct SokolEffect {
-    sokol_fx_pass_t pass[SOKOL_MAX_EFFECT_PASS];
+    const char *name;
+    sokol_fx_pass_t pass[SOKOL_MAX_FX_PASS];
     int32_t input_count;
     int32_t pass_count;
 } SokolEffect;
@@ -27216,7 +27231,7 @@ sg_image sokol_effect_run(
 
 int sokol_effect_add_pass(
     SokolEffect *fx, 
-    sokol_fx_pass_desc_t pass);
+    sokol_fx_pass_desc_t *pass);
 
 #endif
 
@@ -27230,10 +27245,6 @@ struct sokol_screen_pass_t {
 /* Internal functions */
 
 SokolEffect sokol_init_bloom(
-    int width, 
-    int height);
-
-SokolEffect sokol_init_fog(
     int width, 
     int height);
 
@@ -27563,7 +27574,7 @@ sokol_offscreen_pass_t sokol_init_shadow_pass(
     };
 
     result.depth_target = sokol_target_depth(size, size);
-    result.color_target = sokol_target_rgba8(size, size);
+    result.color_target = sokol_target_rgba8(size, size, 1);
 
     result.pass = sg_make_pass(&(sg_pass_desc){
         .color_attachments[0].image = result.color_target,
@@ -27671,7 +27682,7 @@ void sokol_run_shadow_pass(
 
 static
 const char *shd_threshold =
-    "float thresh = 0.8;\n"
+    "float thresh = 0.7;\n"
     "vec4 c = texture(tex, uv);\n"
     "c.r = max(c.r - thresh, 0.0);\n"
     "c.g = max(c.g - thresh, 0.0);\n"
@@ -27679,45 +27690,31 @@ const char *shd_threshold =
     "frag_color = c;\n";
 
 static
-const char *shd_h_blur =
-    "float kernel = 50.0;\n"
-    "vec4 sum = vec4(0.0);\n"
-    "float width = 800.0;\n"
-    "float height = 600.0;\n"
-    "float x = uv.x;\n"
-    "float y = uv.y;\n"
-    "float i, g;\n"
-
-    "kernel = kernel / width;\n"
-    "kernel = kernel / (width / height);\n"
-    "for(i = -kernel; i <= kernel; i+= 1.0 / width) {\n"
-	"	g = i / kernel;\n"
-	"	g *= g;\n"
-	"	sum += texture(tex, vec2(x + i, y)) * exp(-(g) * 5.0);\n"
-	"}\n"
-    "frag_color = sum / 20.0;\n";
+const char *shd_blur_hdr =
+    "const float gauss[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);\n";
 
 static
-const char *shd_v_blur =
-    "float kernel = 50.0;\n"
-    "vec4 sum = vec4(0.0);\n"
-    "float width = 800.0;\n"
-    "float height = 600.0;\n"
-    "float x = uv.x;\n"
-    "float y = uv.y;\n"
-    "float i, g;\n"
-
-    "kernel = kernel / width;\n"
-    "for(i = -kernel; i <= kernel; i+= 1.0 / width) {\n"
-	"	g = i / kernel;\n"
-	"	g *= g;\n"
-	"	sum += texture(tex, vec2(x, y + i)) * exp(-(g) * 5.0);\n"
-	"}\n"
-    "frag_color = sum / 20.0;\n";  
+const char *shd_blur =
+    "float offset = 0.0;\n"
+    "vec4 result = gauss[0] * texture(tex, vec2(uv.x, uv.y));\n"
+    "if (horizontal == 0.0) {\n"
+    "   for (int i = 1; i < 5; i ++) {\n"
+    "     offset += u_px_size;\n"
+    "     result += gauss[i] * texture(tex, vec2(uv.x + offset, uv.y));\n"
+    "     result += gauss[i] * texture(tex, vec2(uv.x - offset, uv.y));\n"
+    "   }\n"
+    "} else {\n"
+    "   for (int i = 1; i < 5; i ++) {\n"
+    "     offset += u_px_size;\n"
+    "     result += gauss[i] * texture(tex, vec2(uv.x, uv.y + offset));\n"
+    "     result += gauss[i] * texture(tex, vec2(uv.x, uv.y - offset));\n"
+    "   }\n"
+    "}\n"
+    "frag_color = result;\n";
 
 static
 const char *shd_blend =
-    "frag_color = texture(tex0, uv) + texture(tex1, uv);\n";
+    "frag_color = texture(tex0, uv) + texture(tex1, uv) * intensity;\n";
 
 SokolEffect sokol_init_bloom(
     int width, int height)
@@ -27725,43 +27722,48 @@ SokolEffect sokol_init_bloom(
     ecs_trace("sokol: initialize bloom effect");
 
     SokolEffect fx = sokol_effect_init(1);
-    int blur_w = 512;
-    int blur_h = 512;
+    fx.name = "Bloom";
 
-    int threshold_pass = sokol_effect_add_pass(&fx, (sokol_fx_pass_desc_t){
-        .width = blur_w, 
-        .height = blur_h, 
+    int threshold_pass = sokol_effect_add_pass(&fx, &(sokol_fx_pass_desc_t){
+        .name = "threshold",
+        .width = 512, 
+        .height = 512,
         .shader = shd_threshold,
-        .inputs = {
-            [0] = { .name = "tex", .id = 0 }
+        .inputs = { "tex" }
+    });
+
+    int blur_pass_1 = sokol_effect_add_pass(&fx, &(sokol_fx_pass_desc_t){
+        .name = "blur",
+        .width = 128, 
+        .height = 128,
+        .shader_header = shd_blur_hdr,
+        .shader = shd_blur,
+        .inputs = { "tex" },
+        .params = { "horizontal" },
+        .loop_count = 2,
+        .steps = {
+            [0] = { 
+                .name = "hblur",
+                .inputs = { threshold_pass },
+                .params = { 1.0 }
+            },
+            [1] = { 
+                .name = "vblur",
+                .inputs = { -1 },
+                .params = { 0.0 }
+            }
         }
     });
 
-    int blur_h_pass = sokol_effect_add_pass(&fx, (sokol_fx_pass_desc_t){
-        .width = blur_w, 
-        .height = blur_h, 
-        .shader = shd_h_blur,
-        .inputs = {
-            [0] = { .name = "tex", .id = threshold_pass }
-        }
-    });
-
-    int blur_v_pass = sokol_effect_add_pass(&fx, (sokol_fx_pass_desc_t){
-        .width = blur_w, 
-        .height = blur_h, 
-        .shader = shd_v_blur,
-        .inputs = {
-            [0] = { .name = "tex", .id = blur_h_pass }
-        }
-    });
-
-    sokol_effect_add_pass(&fx, (sokol_fx_pass_desc_t){
+    sokol_effect_add_pass(&fx, &(sokol_fx_pass_desc_t){
+        .name = "blend",
         .width = width, 
         .height = height, 
         .shader = shd_blend,
-        .inputs = {
-            [0] = { .name = "tex0", .id = 0 },
-            [1] = { .name = "tex1", .id = blur_v_pass }
+        .inputs = { "tex0", "tex1" },
+        .params = { "intensity" },
+        .steps = {
+            [0] = { .inputs = { 0, blur_pass_1 }, .params = { 2.0 }}
         }
     });
 
@@ -27836,71 +27838,147 @@ void sokol_run_screen_pass(
 }
 
 
-static
-char* build_fs_shader(
-    sokol_fx_pass_desc_t pass)
-{
-    ecs_strbuf_t fs_shader = ECS_STRBUF_INIT;
+typedef struct fx_uniforms_t {
+    float px_size;
+    float py_size;
+    float px_scale;
+    float py_scale;
+} fx_uniforms_t;
 
-    ecs_strbuf_appendstr(&fs_shader, 
+static
+char* fx_build_shader(
+    sokol_fx_pass_desc_t *pass)
+{
+    ecs_strbuf_t shad = ECS_STRBUF_INIT;
+
+    /* Add fx header */
+    ecs_strbuf_appendstr(&shad, 
         SOKOL_SHADER_HEADER
         "out vec4 frag_color;\n"
-        "in vec2 uv;\n");
+        "in vec2 uv;\n"
+        "uniform float u_px_size;\n"
+        "uniform float u_py_size;\n"
+        "uniform float u_px_scale;\n"
+        "uniform float u_py_scale;\n");
 
-    sokol_fx_pass_input_t *input;
-    int i = 0;
-    while (true) {
-        input = &pass.inputs[i];
-        if (!input->name) {
+    /* Add inputs */
+    for (int32_t i = 0; i < SOKOL_MAX_FX_INPUTS; i ++) {
+        const char *input = pass->inputs[i];
+        if (!input) {
             break;
         }
 
-        ecs_strbuf_append(&fs_shader, "uniform sampler2D %s;\n", input->name);
-        i ++;
+        ecs_strbuf_append(&shad, "uniform sampler2D %s;\n", input);
     }
 
-    if (pass.shader_header) {
-        ecs_strbuf_appendstr(&fs_shader, pass.shader_header);
-    }
-    
-    ecs_strbuf_appendstr(&fs_shader, "void main() {\n");
-    ecs_strbuf_append(&fs_shader, pass.shader);
-    ecs_strbuf_append(&fs_shader, "}\n");
+    /* Add uniform params */
+    for (int32_t i = 0; i < SOKOL_MAX_FX_INPUTS; i ++) {
+        const char *param = pass->params[i];
+        if (!param) {
+            break;
+        }
 
-    return ecs_strbuf_get(&fs_shader);
+        ecs_strbuf_append(&shad, "uniform float %s;\n", param);
+    }
+
+    /* Add shader header */
+    if (pass->shader_header) {
+        ecs_strbuf_appendstr(&shad, pass->shader_header);
+    }
+
+    /* Shader main */
+    ecs_strbuf_appendstr(&shad, "void main() {\n");
+    ecs_strbuf_append(&shad, pass->shader);
+    ecs_strbuf_append(&shad, "}\n");
+
+    return ecs_strbuf_get(&shad);
 }
 
 int sokol_effect_add_pass(
     SokolEffect *fx, 
-    sokol_fx_pass_desc_t pass_desc)
+    sokol_fx_pass_desc_t *pass_desc)
 {
+    ecs_assert(fx->pass_count < SOKOL_MAX_FX_PASS, ECS_INVALID_PARAMETER, NULL);
+
     sokol_fx_pass_t *pass = &fx->pass[fx->pass_count ++];
+    pass->name = pass_desc->name;
+    pass->width = pass_desc->width;
+    pass->height = pass_desc->height;
+    pass->sample_count = pass_desc->sample_count;
+    pass->loop_count = pass_desc->loop_count;
 
-    char *fs_shader = build_fs_shader(pass_desc);
+    if (!pass->loop_count) {
+        pass->loop_count = 1;
+    }
 
-    /* Create FX shader */
-    sg_shader_desc shd_desc = {
-        .vs.source = sokol_vs_passthrough(),
-        .fs.source = fs_shader
-    };
+    const char *vs_prog = sokol_vs_passthrough();
+    char *fs_prog = fx_build_shader(pass_desc);
 
-    sokol_fx_pass_input_t *input;
-    int i = 0;
-    while (true) {
-        input = &pass_desc.inputs[i];
-        if (!input->name) {
+    /* Populate list of shader specific uniforms */
+    sg_shader_uniform_block_desc prog_ub = { 0 };
+
+    for (int32_t i = 0; i < SOKOL_MAX_FX_PARAMS; i ++) {
+        const char *param = pass_desc->params[i];
+        if (!param) {
             break;
         }
-        shd_desc.fs.images[i].name = input->name;
-        shd_desc.fs.images[i].image_type = SG_IMAGETYPE_2D;
-        pass->inputs[i] = input->id;
-        i ++;
+        prog_ub.size += sizeof(float);
+        prog_ub.uniforms[i] = (sg_shader_uniform_desc){
+            .name = param, 
+            .type = SG_UNIFORMTYPE_FLOAT 
+        };
+        pass->param_count ++;
     }
-    sg_shader shd = sg_make_shader(&shd_desc);
-    pass->input_count = i;
 
-    pass->pass.pip = sg_make_pipeline(&(sg_pipeline_desc){
-        .shader = shd,
+    /* Shader program */
+    sg_shader_desc prog = {
+        .vs = {
+            .source = vs_prog,
+        },
+        .fs = {
+            .source = fs_prog,
+            .uniform_blocks = {
+                [0] = {
+                    .size = sizeof(fx_uniforms_t),
+                    .uniforms = {
+                        [0] = { .name="u_px_size", .type=SG_UNIFORMTYPE_FLOAT },
+                        [1] = { .name="u_py_size", .type=SG_UNIFORMTYPE_FLOAT },
+                        [2] = { .name="u_px_scale", .type=SG_UNIFORMTYPE_FLOAT },
+                        [3] = { .name="u_py_scale", .type=SG_UNIFORMTYPE_FLOAT }
+                    }
+                },
+                [1] = prog_ub
+            }
+        }
+    };
+
+    /* Add inputs to program */
+    for (int32_t i = 0; i < SOKOL_MAX_FX_INPUTS; i ++) {
+        const char *input = pass_desc->inputs[i];
+        if (!input) {
+            break;
+        }
+
+        prog.fs.images[i].name = input;
+        prog.fs.images[i].image_type = SG_IMAGETYPE_2D;
+        pass->input_count ++;
+    }
+
+    /* Count steps */
+    pass->step_count = 1;
+    ecs_os_memcpy_n(pass->steps, pass_desc->steps, sokol_fx_step_t, SOKOL_MAX_FX_STEPS);
+
+    for (int32_t i = 1; i < SOKOL_MAX_FX_STEPS; i ++) {
+        sokol_fx_step_t *step = &pass_desc->steps[i];
+        if (!step->name) {
+            break;
+        }
+        pass->step_count ++;
+    }
+
+    /* Create pipeline */
+    pass->pip = sg_make_pipeline(&(sg_pipeline_desc){
+        .shader = sg_make_shader(&prog),
         .layout = {         
             .attrs = {
                 [0] = { .buffer_index=0, .format=SG_VERTEXFORMAT_FLOAT3 },
@@ -27908,76 +27986,113 @@ int sokol_effect_add_pass(
             }
         },
         .depth = {
-            .pixel_format = SG_PIXELFORMAT_NONE,
-            .compare = 0,
-            .write_enabled = false
+            .pixel_format = SG_PIXELFORMAT_NONE
         },
         .colors = {{
             .pixel_format = SG_PIXELFORMAT_RGBA8
         }},
     });
 
-    pass->pass.color_target = sokol_target_rgba8(
-        pass_desc.width, pass_desc.height);
-
-    pass->pass.pass = sg_make_pass(&(sg_pass_desc){
-        .color_attachments[0].image = pass->pass.color_target,
-        .label = "fx-pass"
+    pass->out[0] = sokol_target_rgba8(pass->width, pass->height, pass->sample_count);
+    pass->pass[0] = sg_make_pass(&(sg_pass_desc){
+        .color_attachments[0].image = pass->out[0]
     });
 
-    pass->pass.pass_action = sokol_clear_action((ecs_rgb_t){0, 0, 0}, false, false);
+    if (pass->step_count > 1) {
+        pass->out[1] = sokol_target_rgba8(pass->width, pass->height, pass->sample_count);
+        pass->pass[1] = sg_make_pass(&(sg_pass_desc){
+            .color_attachments[0].image = pass->out[1]
+        });
+    }
+
+    ecs_os_free(fs_prog);
 
     return fx->pass_count - 1;
 }
 
 static
-void effect_draw(
+void fx_draw(
     sokol_resources_t *res,
-    SokolEffect *effect,
-    sokol_fx_pass_t *fx_pass)
-{
-    sg_apply_pipeline(fx_pass->pass.pip);
-    
-    sg_bindings bind = {
-        .vertex_buffers = { 
-            [0] = res->quad 
-        }
-    };
-
-    int i;
-    for (i = 0; i < fx_pass->input_count; i ++) {
-        int input = fx_pass->inputs[i];
-        bind.fs_images[i] = effect->pass[input].pass.color_target;
-    }
-
-    sg_apply_bindings(&bind);
-
-    sg_draw(0, 6, 1);
-}
-
-static
-void effect_pass_draw(
-    sokol_resources_t *res,
-    SokolEffect *effect,
-    sokol_fx_pass_t *fx_pass)
-{
-    sg_begin_pass(fx_pass->pass.pass, &fx_pass->pass.pass_action);
-    effect_draw(res, effect, fx_pass);
-    sg_end_pass();    
-}
-
-static
-void effect_screen_pass_draw(
-    sokol_resources_t *res,
-    SokolEffect *effect,
-    sokol_fx_pass_t *fx_pass,
+    SokolEffect *fx,
+    sokol_fx_pass_t *pass,
     sokol_screen_pass_t *screen_pass,
     int32_t width,
     int32_t height)
 {
-    sg_begin_default_pass(&screen_pass->pass_action, width, height);
-    effect_draw(res, effect, fx_pass);
-    sg_end_pass();
+    fx_uniforms_t fs_u = {
+        .px_size = 1.0 / (float)pass->width,
+        .py_size = 1.0 / (float)pass->height,
+        .px_scale = (float)width / (float)(pass->width * pass->width),
+        .py_scale = (float)height / (float)(pass->height * pass->height)
+    };
+
+    int out = 0;
+    if (pass->step_count > 1) {
+        out = (pass->step_count - 1) % 2;
+    }
+
+    sg_pass_action load_any = sokol_clear_action((ecs_rgb_t){0}, false, false);
+    sg_pass_action load_prev = {
+        .colors[0].action = SG_ACTION_LOAD,
+        .depth.action = SG_ACTION_LOAD,
+        .stencil.action = SG_ACTION_LOAD
+    };
+
+    int32_t step_count = pass->step_count;
+    int32_t step_last = step_count * pass->loop_count;
+
+    for (int32_t s = 0; s < step_last; s ++) {
+        int32_t step_cur = s % step_count;
+        sokol_fx_step_t *step = &pass->steps[step_cur];
+        bool last = s == (step_last - 1);
+        bool first = s == 0;
+
+        if (!last || !screen_pass) {
+            if (first) {
+                sg_begin_pass(pass->pass[out], &load_any);
+            } else {
+                sg_begin_pass(pass->pass[out], &load_prev);
+            }
+        } else {
+            sg_begin_default_pass(&screen_pass->pass_action, width, height);
+        }
+
+            sg_apply_pipeline(pass->pip);
+
+        if (first) {
+            sg_apply_uniforms(SG_SHADERSTAGE_FS, 0, &(sg_range){
+                &fs_u, sizeof(fx_uniforms_t)
+            });
+        }
+
+        if (pass->param_count) {
+            sg_apply_uniforms(SG_SHADERSTAGE_FS, 1, &(sg_range){
+                step->params, pass->param_count * sizeof(float)
+            });
+        }
+
+        sg_bindings bind = { .vertex_buffers = { res->quad } };
+        for (int32_t i = 0; i < pass->input_count; i ++) {
+            int32_t input = step->inputs[i];
+            if (step_cur == 0 && s != 0) {
+                input = -1; /* loop */
+            }
+
+            if (input == -1) {
+                bind.fs_images[i] = pass->out[!out];
+            } else {
+                bind.fs_images[i] = fx->pass[input].out[0];
+            }
+        }
+
+        sg_apply_bindings(&bind);
+
+        sg_draw(0, 6, 1);
+
+        sg_end_pass();
+
+        out = !out;
+    }
 }
 
 SokolEffect sokol_effect_init(
@@ -28003,23 +28118,22 @@ sg_image sokol_effect_run(
     /* Initialize inputs */
     int i;
     for (i = 0; i < input_count; i ++) {
-        effect->pass[i].pass.color_target = inputs[i];
+        effect->pass[i].out[0] = inputs[i];
     }
 
     /* Run passes */
     if (!screen_pass) {
         for (; i < effect->pass_count; i ++) {
-            effect_pass_draw(res, effect, &effect->pass[i]);
+            fx_draw(res, effect, &effect->pass[i], NULL, width, height);
         }
     } else {
         for (; i < effect->pass_count - 1; i ++) {
-            effect_pass_draw(res, effect, &effect->pass[i]);
+            fx_draw(res, effect, &effect->pass[i], NULL, width, height);
         }
-
-        effect_screen_pass_draw(res, effect, &effect->pass[i], screen_pass, width, height);
+        fx_draw(res, effect, &effect->pass[i], screen_pass, width, height);
     }
 
-    return effect->pass[effect->pass_count - 1].pass.color_target;
+    return effect->pass[effect->pass_count - 1].out[0];
 }
 
 
@@ -28301,7 +28415,7 @@ sg_pipeline init_scene_pipeline(void) {
 
             "float sampleShadow(sampler2D shadowMap, vec2 uv, float compare) {\n"
             "    float depth = decodeDepth(texture(shadowMap, vec2(uv.x, uv.y)));\n"
-            "    depth += 0.00001;\n"
+            "    depth += 0.0001;\n"
             "    return step(compare, depth);\n"
             "}\n"
 
@@ -28353,11 +28467,11 @@ sg_pipeline init_scene_pipeline(void) {
         .shader = shd,
         .index_type = SG_INDEXTYPE_UINT16,
         .layout = {
-            .buffers = {
-                [COLOR_I] =     { .stride = 16, .step_func=SG_VERTEXSTEP_PER_INSTANCE },
-                [MATERIAL_I] =  { .stride = 12, .step_func=SG_VERTEXSTEP_PER_INSTANCE },
-                [TRANSFORM_I] = { .stride = 64, .step_func=SG_VERTEXSTEP_PER_INSTANCE }
-            },
+        .buffers = {
+            [COLOR_I] =     { .stride = 16, .step_func=SG_VERTEXSTEP_PER_INSTANCE },
+            [MATERIAL_I] =  { .stride = 12, .step_func=SG_VERTEXSTEP_PER_INSTANCE },
+            [TRANSFORM_I] = { .stride = 64, .step_func=SG_VERTEXSTEP_PER_INSTANCE }
+        },
 
             .attrs = {
                 /* Static geometry */
@@ -28572,7 +28686,8 @@ void compute_flat_normals(
 
 sg_image sokol_target_rgba8(
     int32_t width, 
-    int32_t height) 
+    int32_t height,
+    int32_t sample_count)
 {
     sg_image_desc img_desc = {
         .render_target = true,
@@ -28583,7 +28698,7 @@ sg_image sokol_target_rgba8(
         .pixel_format = SG_PIXELFORMAT_RGBA8,
         .min_filter = SG_FILTER_LINEAR,
         .mag_filter = SG_FILTER_LINEAR,
-        .sample_count = 1,
+        .sample_count = sample_count ? sample_count : 1,
         .label = "color-image"
     };
 
@@ -28740,55 +28855,6 @@ const char* sokol_vs_passthrough(void)
             "  gl_Position = v_position;\n"
             "  uv = v_uv;\n"
             "}\n";
-}
-
-
-
- 
-//   #define LOG2 1.442695
- 
-//   float fogDistance = length(v_position);
-// //   float fogAmount = smoothstep(u_fogNear, u_fogFar, fogDistance);
-//   float fogAmount = 1. - exp2(-u_fogDensity * u_fogDensity * fogDistance * fogDistance * LOG2);
-//   fogAmount = clamp(fogAmount, 0., 1.);
- 
-//   gl_FragColor = mix(color, u_fogColor, fogAmount);  
-
-static
-const char *shd_fog_hdr =
-    "float decodeDepth(vec4 rgba) {\n"
-    "    return dot(rgba, vec4(1.0, 1.0/255.0, 1.0/65025.0, 1.0/160581375.0));\n"
-    "}\n"
-    "#define LOG2 1.442695\n";
-
-static
-const char *shd_fog =
-    "float fogDensity = 0.12;\n"
-    "vec4 fogColor = vec4(0.5, 0.5, 1.0, 1.0);\n"
-    "float fogDistance = decodeDepth(texture(depth, uv));\n"
-    "float fogAmount = 1.0 - exp2(-fogDensity * fogDensity * fogDistance * fogDistance * LOG2);\n"
-    "fogAmount = clamp(fogAmount, 0.0, 1.0);\n"
-    "frag_color = mix(texture(tex, uv), fogColor, fogAmount);\n";
-
-SokolEffect sokol_init_fog(
-    int width, int height)
-{
-    ecs_trace("sokol: initialize fog effect");
-
-    SokolEffect fx = sokol_effect_init(2);
-
-    sokol_effect_add_pass(&fx, (sokol_fx_pass_desc_t){
-        .width = width, 
-        .height = height, 
-        .shader = shd_fog,
-        .shader_header = shd_fog_hdr,
-        .inputs = {
-            [0] = { .name = "tex", .id = 0 },
-            [1] = { .name = "depth", .id = 1 }
-        }
-    });
-
-    return fx;
 }
 
 

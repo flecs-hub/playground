@@ -1,0 +1,135 @@
+using flecs.components.*
+using flecs.meta
+using flecs.game
+using assemblies
+
+const PI = 3.1415926
+
+const width = 12
+const depth = 12
+const height = 16
+const dark_wood : Rgb = {0.17, 0.1, 0.05}
+const light_wood : Rgb = {0.3, 0.2, 0.1}
+const bar_thickness : f32 = 1
+
+with $dark_wood {  
+  Prefab pillar {
+    - Box{$bar_thickness, $height, $bar_thickness}
+  }
+
+  pillars {
+    - Position3{y: $height / 2}
+    - Grid {
+      x: {count: 2, spacing: $width}
+      z: {count: 2, spacing: $depth}
+      prefab: pillar
+    }
+  }
+}
+
+with $light_wood {  
+  Prefab crossbar {
+    - Box{$width + 3, 0.5, 0.5}
+  }
+
+  crossbars {
+    - Position3{y: $height - 1}
+    - Grid {
+      x: {count: 1}
+      z: {count: 1}
+      border: {x: $width, z: $depth}
+      prefab: crossbar
+    }
+  }
+}
+
+hut {
+  - Position3{y: 4}
+
+  wood_frame :- WoodFrame{
+    width:$, 
+    depth:$,
+    plank_width: 0.3,
+    plank_thickness: 0.3
+    plank_spacing: 1
+  }
+
+  const plank_width = 2
+  const floor_count = $width / $plank_width
+
+  Prefab plank {
+    - Box{width: $plank_width, 0.5, depth: $depth + 2.5}
+    - Rgb{0.08, 0.05, 0.03}
+  }
+
+  floor {
+    - Position3{}
+    - Grid {
+      x: {count: $floor_count, spacing: $plank_width + 0.3}
+      prefab: plank
+    }
+  }
+
+  const roof_count = $width / $plank_width
+
+  _ {
+    - Position3{0, 0.5}
+
+    bar {
+      - Position3{0, $height + 0.5}
+      - Rotation3{z: $PI / 4}
+      - Box{1, 1, $depth + 3}
+      - $light_wood
+    }
+
+    roof_1 {
+      - Position3{x: -$width / 2 + 1, y: $height - 3}
+      - Rotation3{z: $PI / 4}
+
+      bar_1 {
+        - Position3{y: -0.5, z: -$depth / 2 + 0.2}
+        - Box{$width, 0.75, 0.75}
+        - $light_wood
+      }
+
+      bar_2 {
+        - Position3{y: -0.5, z: $depth / 2 - 0.2}
+        - Box{$width, 0.75, 0.75}
+        - $light_wood
+      }
+
+      grid {
+        - Position3{}
+        - Grid {
+          x: {count: $roof_count, spacing: $plank_width + 0.3}
+          prefab: plank
+        }
+      }
+    }
+
+    roof_2 {
+      - Position3{x: $width / 2 - 1, y: $height - 3}
+      - Rotation3{z: -$PI / 4}
+
+      bar_1 {
+        - Position3{y: -0.5, z: -$depth / 2 + 0.2}
+        - Box{$width, 0.75, 0.75}
+        - $light_wood
+      }
+
+      bar_2 {
+        - Position3{y: -0.5, z: $depth / 2 - 0.2}
+        - Box{$width, 0.75, 0.75}
+        - $light_wood
+      }
+
+      grid {
+        - Grid {
+          x: {count: $roof_count, spacing: $plank_width + 0.3}
+          prefab: plank
+        }
+      }
+    }
+  }
+}
+

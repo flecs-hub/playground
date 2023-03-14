@@ -1,0 +1,72 @@
+module assemblies
+using flecs.components.*
+using flecs.game
+using flecs.meta
+
+assembly WindMill {
+  prop width: f32 = 7
+  prop height: f32 = 15
+  
+  const PI = 3.14151692
+  
+  Prefab Blades : materials.Wood {
+    const l_bar = 17
+    const w_bar = 0.5
+    const blade_thickness = 0.2
+    const blade_color = Rgb{1.0, 1.0, 1.0}   
+    const l_blade = 6
+    const w_blade = 3
+
+    - Position3
+    - Rotation3      
+    - Box{$l_bar, $w_bar, $w_bar}
+
+    _ {
+      - Position3{
+        x: $l_bar / 2 - $l_blade / 2
+        y: $w_blade / 2
+      }
+      - Rotation3      
+      - Box{$l_blade, $w_blade, $blade_thickness}
+      - $blade_color          
+    }
+    
+    _ {
+      - Position3{
+        x: -$l_bar / 2 + $l_blade / 2
+        y: -$w_blade / 2
+      }
+      - Rotation3      
+      - Box{$l_blade, $w_blade, $blade_thickness}
+      - $blade_color          
+    }                
+  }
+  
+  building {    
+    - House{width:$, depth:$width, height:$}
+      
+    _ : materials.BlueStone {
+      const wf = 0.8    
+      - Position3{y: $height}    
+      - Box{$wf * $width, 2, $wf * $width}
+    }
+
+    _ {
+      const w_axis = 0.8    
+      const l_axis = 1.5
+      const y = $height * 0.9
+      const z = -$width / 2 - $l_axis / 2
+      
+      rotor : materials.Wood {
+        - Position3{y:$, z:$}
+        - Box{$w_axis, $w_axis, $l_axis}
+        - AngularVelocity{z: 0.8}
+            
+        blades_1 : Blades
+        blades_2 : Blades {
+          - Rotation3{z: $PI / 2}
+        }
+      }       
+    } 
+  }
+}

@@ -1,0 +1,16 @@
+module materials
+using flecs.components.graphics
+
+Prefab BlueStone {
+  - Specular{specular_power: 0.8, shininess: 6.0}
+  - Rgb{0.05, 0.2117, 0.58}
+}
+
+Prefab Water {
+  - Specular{specular_power: 1.5, shininess: 6.0}
+  - Rgb{0.025, 0.4, 0.6}
+}
+
+Prefab Wood {
+  - Rgb{0.15, 0.1, 0.05}
+}

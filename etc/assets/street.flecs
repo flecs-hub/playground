@@ -1,0 +1,76 @@
+module assemblies
+using flecs.components.*
+using flecs.game
+using flecs.meta
+
+assembly Street {
+  prop width: f32 = 4
+  prop length: f32 = 30
+  prop sidewalk_width: f32 = 3
+  prop color: Rgb = {0.5, 0.5, 0.5}
+  prop sidewalk_color: Rgb = {0.9, 0.9, 0.9}
+
+  const PI = 3.1415926
+
+  street {
+    - Position3{0, 0.1}
+    - Box{width:$, 0.2, depth: $length}
+    - $color
+  }
+
+  Prefab Sidewalk {
+    - Box{width: $sidewalk_width, 0.3, depth: $length}
+    - $sidewalk_color
+  }
+
+  sidewalk_l : Sidewalk {
+    - Position3{x: -$width / 2 - $sidewalk_width / 2}
+  }
+
+  sidewalk_r : Sidewalk {
+    - Position3{x: $width / 2 + $sidewalk_width / 2}
+    - Rotation3{y: $PI}
+  }
+}
+
+assembly StreetWithTrees {
+  prop width: f32 = 4
+  prop length: f32 = 30
+  prop sidewalk_width: f32 = 3
+
+  street :- Street{width:$, length:$, sidewalk_width:$}
+
+  const center_height = 0.1
+  const center_width = 1.5
+  const soil_height = $center_height - 0.01
+  const tree_spacing = 20
+  const tree_count = $length / $tree_spacing
+
+  Prefab TreePrefab {
+    - CypressTree{
+      trunk_height: 1.5
+      width: 2
+      height: 10
+    }
+  }
+
+  trees_left {
+    - Position3{-$width / 2 - $sidewalk_width / 2}
+    - Grid {
+      z.count: $tree_count
+      z.spacing: $tree_spacing,
+      z.variation: 10
+      prefab: TreePrefab
+    }
+  }
+
+  trees_right {
+    - Position3{$width / 2 + $sidewalk_width / 2}
+    - Grid {
+      z.count: $tree_count
+      z.spacing: $tree_spacing,
+      z.variation: 10
+      prefab: TreePrefab
+    }
+  }
+}

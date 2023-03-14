@@ -28,11 +28,11 @@
 
 /* Convenience macro for exporting symbols */
 #ifndef flecs_components_transform_STATIC
-#if flecs_components_transform_EXPORTS && (defined(_MSC_VER) || defined(__MINGW32__))
+#if defined(flecs_components_transform_EXPORTS) && (defined(_MSC_VER) || defined(__MINGW32__))
   #define FLECS_COMPONENTS_TRANSFORM_API __declspec(dllexport)
-#elif flecs_components_transform_EXPORTS
+#elif defined(flecs_components_transform_EXPORTS)
   #define FLECS_COMPONENTS_TRANSFORM_API __attribute__((__visibility__("default")))
-#elif defined _MSC_VER
+#elif defined(_MSC_VER)
   #define FLECS_COMPONENTS_TRANSFORM_API __declspec(dllimport)
 #else
   #define FLECS_COMPONENTS_TRANSFORM_API
@@ -53,38 +53,45 @@
 
 #ifndef FLECS_LEGACY
 
+FLECS_COMPONENTS_TRANSFORM_API
 ECS_STRUCT(EcsPosition2, {
     float x;
     float y;
 });
 
+FLECS_COMPONENTS_TRANSFORM_API
 ECS_STRUCT(EcsPosition3, {
     float x;
     float y;
     float z;
 });
 
+FLECS_COMPONENTS_TRANSFORM_API
 ECS_STRUCT(EcsScale2, {
     float x;
     float y;
 });
 
+FLECS_COMPONENTS_TRANSFORM_API
 ECS_STRUCT(EcsScale3, {
     float x;
     float y;
     float z;
 });
 
+FLECS_COMPONENTS_TRANSFORM_API
 ECS_STRUCT(EcsRotation2, {
     float angle;
 });
 
+FLECS_COMPONENTS_TRANSFORM_API
 ECS_STRUCT(EcsRotation3, {
     float x;
     float y;
     float z;
 });
 
+FLECS_COMPONENTS_TRANSFORM_API
 ECS_STRUCT(EcsQuaternion, {
     float x;
     float y;
@@ -94,17 +101,29 @@ ECS_STRUCT(EcsQuaternion, {
 
 #endif
 
+FLECS_COMPONENTS_TRANSFORM_API
+extern ECS_COMPONENT_DECLARE(EcsTransform2);
+
 typedef struct EcsTransform2 {
     mat3 value;
 } EcsTransform2;
+
+FLECS_COMPONENTS_TRANSFORM_API
+extern ECS_COMPONENT_DECLARE(EcsTransform3);
 
 typedef struct EcsTransform3 {
     mat4 value;
 } EcsTransform3;
 
+FLECS_COMPONENTS_TRANSFORM_API
+extern ECS_COMPONENT_DECLARE(EcsProject2);
+
 typedef struct EcsProject2 {
     mat3 value;
 } EcsProject2;
+
+FLECS_COMPONENTS_TRANSFORM_API
+extern ECS_COMPONENT_DECLARE(EcsProject3);
 
 typedef struct EcsProject3 {
     mat4 value;
@@ -128,7 +147,7 @@ void FlecsComponentsTransformImport(
 namespace flecs {
 namespace components {
 
-class transform : FlecsComponentsTransform {
+class transform {
 public:
     using Position2 = EcsPosition2;
 
@@ -161,27 +180,22 @@ public:
     using Project3 = EcsProject3;
 
     transform(flecs::world& ecs) {
+        // Load module contents
         FlecsComponentsTransformImport(ecs);
 
+        // Bind C++ types with module contents
         ecs.module<flecs::components::transform>();
-
-        ecs.component<Position2>("::flecs::components::transform::Position2");
-        ecs.component<EcsPosition3>();
-            .component<Position3>();
-
-        ecs.component<Scale2>("::flecs::components::transform::Scale2");
-        ecs.component<Scale3>("::flecs::components::transform::Scale3");
-
-        ecs.component<Rotation2>("::flecs::components::transform::Rotation2");
-        ecs.component<Rotation3>("::flecs::components::transform::Rotation3");
-
-        ecs.component<Quaternion>("::flecs::components::transform::Quaternion");
-
-        ecs.component<Transform2>("::flecs::components::transform::Transform2");
-        ecs.component<Transform3>("::flecs::components::transform::Transform3");
-
-        ecs.component<Project2>("::flecs::components::transform::Project2");
-        ecs.component<Project3>("::flecs::components::transform::Project3");
+        ecs.component<Position2>();
+        ecs.component<Position3>();
+        ecs.component<Scale2>();
+        ecs.component<Scale3>();
+        ecs.component<Rotation2>();
+        ecs.component<Rotation3>();
+        ecs.component<Quaternion>();
+        ecs.component<Transform2>();
+        ecs.component<Transform3>();
+        ecs.component<Project2>();
+        ecs.component<Project3>();
     }
 };
 

@@ -1,0 +1,92 @@
+module assemblies
+using flecs.components.*
+using flecs.game
+using flecs.meta
+
+assembly Battlement {
+  prop width: f32 = 1.5
+  prop height: f32 = 1
+  prop color: Rgb = {0.3, 0.3, 0.3}
+
+  _ {
+    - Position3{y: $height / 2}
+    - Box{$width, 2, $width}
+    - $color
+  }
+}
+
+assembly GuardTower {
+  prop width: f32 = 10
+  prop height: f32 = 15
+  prop color: Rgb = {0.3, 0.3, 0.3}
+
+  const PI = 3.1415926
+  const tow_batt_count = $width / 2
+  const w_battlement = 1.5
+  const h_battlement = 1
+
+  ceiling {
+    - Position3{0, $height - 2}
+    - Rotation3{$PI / 2}
+    - Rectangle{$width, $width}
+    - $color
+  }
+
+  battlements {
+    - Position3{y: $height}
+    - Grid {
+      x.count: $tow_batt_count
+      z.count: $tow_batt_count
+      border.x: $width
+      border.z: $width
+      prefab: Battlement
+    }
+  }
+
+  frame :- Frame{
+    width: $width
+    depth: $width
+    height: $height
+    thickness: 2
+    color: $color
+  }
+}
+
+assembly Wall {
+  prop width: f32 = 15
+  prop height: f32 = 5
+  prop depth: f32 = 15
+  prop color: Rgb = {0.3, 0.3, 0.3}
+
+  const batt_x_count = $width / 3
+  const batt_z_count = $depth / 3
+  const w_battlement = 1.5
+  const h_battlement = 1
+  const tower_width = 10
+  const tower_x = $width / 2 - $tower_width / 4
+  const tower_z = $depth / 2 - $tower_width / 4
+
+  wall :- Frame {
+    width: $width
+    depth: $depth
+    height: $height
+    thickness: 3,
+    color: $color
+  }
+
+  _ :- GuardTower{}, Position3{-$tower_x, 0, -$tower_z}
+  _ :- GuardTower{}, Position3{-$tower_x, 0,  $tower_z}
+  _ :- GuardTower{}, Position3{ $tower_x, 0, -$tower_z}
+  _ :- GuardTower{}, Position3{ $tower_x, 0,  $tower_z}
+
+  battlements {
+    - Position3{y: $height}
+    - Grid {
+      x.count: $batt_x_count
+      z.count: $batt_z_count
+      border.x: $width
+      border.z: $depth
+      prefab: Battlement
+    }
+  }
+}

@@ -1,0 +1,114 @@
+module assemblies
+using flecs.components.*
+using flecs.game
+using flecs.meta
+
+assembly Frame {
+  prop width: f32 = 10
+  prop depth: f32 = 10
+  prop height: f32 = 10
+  prop thickness: f32 = 0.5
+  prop color: Rgb = {0.7, 0.7, 0.7}
+
+  const PI = 3.1415926
+  const w_inner = $width - $thickness * 2
+  const d_inner = $depth - $thickness * 2
+  const left = -$width / 2
+  const right = $width / 2
+  const top = $depth / 2
+  const bottom = -$depth / 2
+  const ceil_left = $left + $thickness / 2
+  const ceil_right = $right - $thickness / 2
+  const ceil_top = $top - $thickness / 2
+  const ceil_bottom = $bottom + $thickness / 2
+  const y = $height / 2
+
+  with $color {
+
+    // Left wall
+    _ {
+      - Position3{$left, $y}
+      - Rotation3{0, $PI / 2}
+      - Rectangle{$depth, $height}
+    }
+    _ {
+      - Position3{$left + $thickness, $y}
+      - Rotation3{0, -$PI / 2}
+      - Rectangle{$d_inner, $height}
+    }
+
+    // Right wall
+    _ {
+      - Position3{$right, $y}
+      - Rotation3{0, -$PI / 2}
+      - Rectangle{$depth, $height}
+    }
+    _ {
+      - Position3{$right - $thickness, $y}
+      - Rotation3{0, $PI / 2}
+      - Rectangle{$d_inner, $height}
+    }
+
+    // Top wall
+    _ {
+      - Position3{0, $y, $top}
+      - Rotation3{0, $PI}
+      - Rectangle{$width, $height}
+    }
+    _ {
+      - Position3{0, $y, $top - $thickness}
+      - Rectangle{$w_inner, $height}
+    }
+
+    // Bottom wall
+    _ {
+      - Position3{0, $y, $bottom}
+      - Rectangle{$width, $height}
+    }
+    _ {
+      - Position3{0, $y, $bottom + $thickness}
+      - Rotation3{0, $PI}
+      - Rectangle{$w_inner, $height}
+    }
+
+    // Ceiling
+    with Rotation3{$PI / 2} {
+      _ {
+        - Position3{$ceil_left, $height}
+        - Rectangle{$thickness, $depth}
+      }
+      _ {
+        - Position3{$ceil_right, $height}
+        - Rectangle{$thickness, $depth}
+      }
+      _ {
+        - Position3{0, $height, $ceil_top}
+        - Rectangle{$width, $thickness}
+      }
+      _ {
+        - Position3{0, $height, $ceil_bottom}
+        - Rectangle{$width, $thickness}
+      }
+    }
+
+    // Floor
+    with Rotation3{-$PI / 2} {
+      _ {
+        - Position3{$ceil_left, 0}
+        - Rectangle{$thickness, $depth}
+      }
+      _ {
+        - Position3{$ceil_right, 0}
+        - Rectangle{$thickness, $depth}
+      }
+      _ {
+        - Position3{0, 0, $ceil_top}
+        - Rectangle{$width, $thickness}
+      }
+      _ {
+        - Position3{0, 0, $ceil_bottom}
+        - Rectangle{$width, $thickness}
+      }
+    }
+  }
+}

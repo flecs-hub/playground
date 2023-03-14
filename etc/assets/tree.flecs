@@ -1,0 +1,46 @@
+module assemblies
+using flecs.components.*
+using flecs.game
+using flecs.meta
+
+assembly Tree {
+  prop height: f32 = 8
+  prop width: f32 = 2
+  prop trunk_height: f32 = 2
+
+  const trunk_width = 0.6
+  const canopy_height = $height - $trunk_height
+  const canopy_width = $width
+
+  _ {
+    - Position3 {0, ($trunk_height / 2), 0}
+    - Box {$trunk_width, $trunk_height, $trunk_width}
+    - Rgb {0.15, 0.1, 0.05}
+  }
+
+  _ {
+    const canopy_y = $trunk_height + ($canopy_height / 2)
+
+    - Position3 {0, $canopy_y, 0}
+    - Box {$canopy_width, $canopy_height, $canopy_width}
+    - Rgb {0.2, 0.3, 0.15}
+  }
+}
+
+assembly CypressTree {
+  prop height: f32 = 12
+  prop width: f32 = 2
+  prop trunk_height: f32 = 2
+
+  _ :- Tree{height: $height, width: $width, trunk_height: $trunk_height}
+
+  const canopy_width = $width * 0.75
+  const canopy_height = $height * 0.05
+  const canopy_y = $height + $canopy_height / 2
+
+  _ {
+    - Position3 {0, $canopy_y, 0}
+    - Box {$canopy_width, $canopy_height, $canopy_width}
+    - Rgb {0.2, 0.3, 0.15}
+  }
+}

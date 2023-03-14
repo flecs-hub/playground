@@ -12,6 +12,11 @@
                 "dl"
             ]
         },
+        "${cfg sanitize}": {
+            "defines": [
+                "FLECS_SANITIZE"
+            ]
+        },
         "${os windows}": {
             "defines": [
                 "_WINDOWS",
@@ -35,7 +40,10 @@
                 "ldflags": [
                     "-s GL_DEBUG=1"
                 ]
-            }
+            },
+            "embed": [
+                "etc\/sokol\/shaders"
+            ]
         }
     }
 }

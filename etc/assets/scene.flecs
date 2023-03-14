@@ -1,0 +1,48 @@
+// Flecs playground
+//
+// Modify the values below to get a feel for
+// what it's like to work with an ECS without
+// writing any code!
+//
+// To control the camera with the keyboard,
+// first click on the 3D view.
+//
+// For more examples, see examples/plecs in 
+//  https://github.com/SanderMertens/flecs
+
+using flecs.components.*
+using flecs.game
+using assemblies
+
+// Override time of day
+$ :- TimeOfDay{t: 0.0 speed: 0.004}
+
+// Ground plane
+plane {
+  - Position3{y: -0.5}
+  - Box{10000, 1, 10000}
+  - Rgb{0.7, 0.7, 0.7}
+}
+
+// Create a windmill
+windmill :- WindMill{height: 15}
+
+// Create a road
+road {
+  - Position3{z: 20}
+  - Box{10000, 0.5, 15}
+  - Rgb{0.55, 0.51, 0.4}
+}
+
+// Create a row of trees
+tree_row {
+  - Position3{z: 30}
+  - Grid{
+    x: {
+      count: 60
+      spacing: 15
+      variation: 10
+    }
+    prefab: CypressTree
+  }
+}

@@ -5,9 +5,24 @@
         "use": [
             "flecs",
             "flecs.components.gui",
+            "flecs.components.geometry",
+            "flecs.components.graphics",
+            "flecs.components.physics",
+            "flecs.components.transform",
+            "flecs.game",
             "flecs.systems.physics",
             "flecs.systems.sokol"
         ],
         "standalone": true
+    },
+    "lang.c": {
+        "${os linux}": {
+            "lib": ["rt", "pthread"],
+            "defines": ["FLECS_SOFT_ASSERT", "FLECS_KEEP_ASSERT"]
+        },
+        "${target em}": {
+            "ldflags": ["-sSTACK_SIZE=1000000"],
+            "embed": ["etc/assets"]
+        }
     }
 }

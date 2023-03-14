@@ -1,0 +1,30 @@
+module assemblies
+using flecs.components.*
+using flecs.game
+using flecs.meta
+
+assembly Fountain {
+  prop width: f32 = 9
+  prop depth: f32 = 9
+  prop height: f32 = 0.5
+  prop stone_color: Rgb = {0.7, 0.7, 0.7}
+
+  water : materials.Water {
+    - Position3{y: 0.2}
+    - Box{8, 0.4, 8}
+  }
+
+  frame {
+    - Frame{
+      width:$, depth:$, height:$, thickness: 0.5, 
+      color: $stone_color
+    }
+  }
+
+  with $stone_color {
+    step   :- Position3{y: 0.1}, Box{9.5, 0.2, 9.5}
+    base   :- Position3{y: 0.4}, Box{2, 0.8, 2}
+    center :- Position3{y: 0.6}, Box{1, 1.2, 1}
+    top    :- Position3{y: 1},   Box{0.7, 2, 0.7}
+  }
+}

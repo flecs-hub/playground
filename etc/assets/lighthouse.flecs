@@ -1,0 +1,77 @@
+module assemblies
+using flecs.components.*
+using flecs.game
+using flecs.meta
+
+Prefab light_material {
+  - Emissive{1.0}
+  - Rgb{0.5, 1, 2.5}
+}
+
+assembly LightHouse {
+  prop width: f32 = 10
+  prop height: f32 = 40
+
+  const color: Rgb = {0.7, 0.7, 0.7}
+  const h_story_0 = $height * 0.375
+  const h_story_1 = $height * 0.2
+  const h_story_2 = $height * 0.375
+  const o_story_1 = $h_story_0 - 1
+  const o_story_2 = $o_story_1 + $h_story_1 - 1
+  const o_story_3 = $o_story_2 + $h_story_2 - 1
+
+  _ {
+    - House{width:$, depth: $width, height: $h_story_0, color:$}
+  }
+
+  _ {
+    - Position3{y: $o_story_1}
+    - Room{width: $width - 2, depth: $width - 2, height: $h_story_1, color:$}
+  }
+
+  _ {
+    - Position3{y: $o_story_2}
+    - Room{width: $width - 4, depth: $width - 4, height: $h_story_2, color:$}
+  }
+
+  _ {
+    const rim_width = $width - 4
+    const t_width = $width - 6
+    const pillar_height = 6
+
+    - Position3{y: $o_story_3 + $pillar_height / 2}
+
+    with $color {
+      with Box{0.5, $pillar_height, 0.5} {
+        _ :- Position3{x: -$t_width / 2, z: -$t_width / 2}
+        _ :- Position3{x: -$t_width / 2, z:  $t_width / 2}
+        _ :- Position3{x:  $t_width / 2, z: -$t_width / 2}
+        _ :- Position3{x:  $t_width / 2, z:  $t_width / 2}
+        _ :- Position3{x: -$t_width / 2}
+        _ :- Position3{x:  $t_width / 2}
+        _ :- Position3{z: -$t_width / 2}
+        _ :- Position3{z:  $t_width / 2}
+      }
+      _ {
+        - Position3{y: $pillar_height / 2 + 0.5}
+        - Box{$rim_width, 1, $rim_width}
+      }
+    }
+
+    _ : materials.BlueStone {
+      - Position3{0, $pillar_height / 2 + 1.25, 0}
+      - Box{$t_width - 0.1, 1.0, $t_width - 0.1}
+      - Rgb{0.05, 0.2117, 0.58}
+    }
+
+    _ : light_material {
+      - Position3
+      - Box{3, $pillar_height, 3}
+    }
+  }
+
+  with Room{width: 5, depth: 5, height: 7} {
+    _ :- Position3{x: -4}
+    _ :- Position3{x: 4}
+  }
+}

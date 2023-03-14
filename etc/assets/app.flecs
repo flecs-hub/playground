@@ -1,0 +1,37 @@
+using flecs.components.*
+using flecs.game
+
+sun {
+  - Sun
+  - Rotation3{y: 0.3}
+}
+
+$ :- TimeOfDay{
+  t: 0.4
+  speed: 0.0
+}
+
+camera {
+  - CameraController
+  - Position3{13.74, 18.81, -22.5}
+  - Rotation3{-0.32, -0.52, 0}
+  - Camera {
+      fov: 20
+      up: [0, 1, 0]
+      far_: 1000
+      near_: 1.0
+  }
+}
+
+canvas {
+  - Atmosphere
+  - Canvas {
+      title: "Flecs Playground",
+      width: 1024
+      height: 800
+      background_color: {0.3, 0.6, 0.9}
+      directional_light: sun
+      camera: camera
+      fog_density: 2
+  }
+}

@@ -1,0 +1,83 @@
+module assemblies
+using flecs.components.*
+using flecs.game
+using flecs.meta
+
+Prefab ColumnMaterial {
+  - Specular{specular_power: 0.8, shininess: 6.0}
+}
+
+assembly Temple {
+  prop width: f32 = 8
+  prop depth: f32 = 8
+  prop height: f32 = 8
+  prop color: Rgb = {1, 1, 1}
+
+  with $color {
+    _ {
+      - Position3{y: 0.2}
+      - Box{$width + 1, 0.4, $depth + 1}
+    }
+    _ {
+      - Position3{y: 0.4}
+      - Box{$width + 0.5, 0.8, $depth + 0.5}
+    }
+    _ {
+      - Position3{y: $height + 1.2}
+      - Box{$width, 0.8, $depth}
+    }
+    _ {
+      - Position3{y: $height + 1.4}
+      - Box{$width + 0.5, 0.4, $depth + 0.5}
+    }
+    _ {
+      - Position3{y: $height + 1.9}
+      - Box{$width, 1.0, $depth}
+    }
+  }
+
+  Prefab Column : materials.BlueStone {
+    - Box{1.2, $height, 1.2}
+
+    with $color {
+      _ {
+        - Position3{y: -$height / 2 + 0.25}
+        - Box{1.5, 0.5, 1.5}
+      }
+      _ {
+        - Position3{y: -$height / 2 + 0.15}
+        - Box{1.8, 0.3, 1.8}
+      }
+      _ {
+        - Position3{y: $height / 2 - 0.15}
+        - Box{1.8, 0.3, 1.8}
+      }
+      _ {
+        - Position3{y: $height / 2 - 0.25}
+        - Box{1.5, 0.5, 1.5}
+      }
+    }
+  }
+
+  columns_1 {
+    - Position3{y: $height / 2 + 0.8}
+    - Grid{
+      x.count: 2
+      x.spacing: $width - 2
+      z.count: 4
+      z.spacing: $depth / 4
+      prefab: Column
+    }
+  }
+
+  columns_2 {
+    - Position3{y: $height / 2 + 0.8}
+    - Grid{
+      x.count: 2
+      x.spacing: $width / 4
+      z.count: 2
+      z.spacing: $depth - 2.5
+      prefab: Column
+    }
+  }
+}

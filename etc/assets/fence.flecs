@@ -1,0 +1,101 @@
+module assemblies
+using flecs.components.*
+using flecs.game
+using flecs.meta
+
+assembly Fence {
+  // Fence parameters
+  prop width : f32 = 40
+  prop height : f32 = 20
+
+  // Pillar parameters
+  const pillar_width = 0.4
+  const pillar_spacing = 2
+  const pillar_count = $width / $pillar_spacing
+  const p_grid_spacing = $width / ($pillar_count - 1)
+ 
+  // Bar parameters
+  const bar_height = 0.4
+  const bar_spacing = 0.6
+  const bar_depth = $pillar_width / 2
+  const bar_count = $height / $bar_spacing
+  const b_grid_spacing = $height / $bar_count
+   
+  with Prefab, (IsA, materials.Wood) {
+    Pillar :- Box {
+      $pillar_width, $height, $pillar_width
+    }
+    Bar :- Box {$width, $bar_height, $bar_depth}
+  }    
+  
+  // Pillars
+  pillars {
+    - Position3{y: $height/2}
+    - Grid{
+      x.count: $pillar_count,
+      x.spacing: $p_grid_spacing
+      prefab: Pillar    
+    }
+  }
+
+  // Bars
+  bars {
+    - Position3{y: $height/2}
+    - Grid{
+      y.count: $bar_count,
+      y.spacing: $b_grid_spacing
+      prefab: Bar    
+    }
+  }
+} // assembly Fence
+
+assembly Enclosing {
+  prop width: f32 = 40
+  prop height: f32 = 10
+  prop depth: f32 = 40
+  
+  const width_half = $width / 2
+  const depth_half = $depth / 2
+  const PI = 3.1415926
+
+  left {
+    - Position3{x: -$width_half}
+    - Rotation3{y: $PI / 2}
+    - Fence{width: $depth, height:$}
+  }
+  right {
+    - Position3{x: $width_half}
+    - Rotation3{y: $PI / 2}
+    - Fence{width: $depth, height:$}
+  }
+  back {
+    - Position3{z: -$depth_half}
+    - Fence{width: $width, height:$}
+  }
+  front {
+    - Position3{z: $depth_half}
+    - Fence{width: $width, height:$}
+  }
+} // assembly Enclosing
+
+assembly Pasture {
+  prop width: f32 = 10
+  prop depth: f32 = 10
+  prop height: f32 = 2
+
+  const fence_spacing = 1
+  const fence_width = $width - $fence_spacing
+  const fence_depth = $depth - $fence_spacing
+  const width_half = $fence_width / 2
+  const depth_half = $fence_depth / 2
+  const grass_height = 0.1
+  const PI = 3.1415926
+
+  _ :- Enclosing {width:$, height:$, depth:$}
+
+  grass {
+    - Position3{y: $grass_height / 2}
+    - Box{$width, $grass_height, $depth}
+    - Rgb {0.2, 0.3, 0.15}
+  }
+}

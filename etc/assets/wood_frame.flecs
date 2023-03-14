@@ -1,0 +1,52 @@
+using flecs.components.*
+using flecs.meta
+using flecs.game
+
+assembly WoodFrame {
+  prop width : f32 = 10
+  prop depth : f32 = 10
+  prop height : f32 = 10
+  prop plank_width: f32 = 1
+  prop plank_spacing: f32 = 0.1
+  prop plank_height: f32 = 5
+  prop plank_thickness : f32 = 0.3
+
+  const light_wood : Rgb = {0.3, 0.2, 0.1}
+
+  with $light_wood {
+    Prefab plank {
+      - Box{$plank_width, $plank_height, $plank_thickness}
+    }
+
+    const x_count = $width / ($plank_width + $plank_spacing)
+    const z_count = $depth / ($plank_width + $plank_spacing)
+    
+    planks {
+      - Position3{0, $plank_height / 2}  
+      - Grid {
+        x: {count: $x_count}
+        z: {count: $z_count} 
+        border: {x: $width, z: $depth}
+        border_offset: {x: $plank_thickness / 2, z: $plank_thickness / 2}
+        prefab: plank    
+      }
+    }
+
+    _ {
+      - Position3{0, $plank_height, -$depth / 2 - $plank_thickness / 2}  
+      - Box{$width, $plank_thickness, $plank_thickness}
+    }
+    _ {
+      - Position3{0, $plank_height, $depth / 2 + $plank_thickness / 2}  
+      - Box{$width, $plank_thickness, $plank_thickness}
+    }
+    _ {
+      - Position3{-$width / 2 - $plank_thickness / 2, $plank_height}
+      - Box{$plank_thickness, $plank_thickness, $depth}
+    }
+    _ {
+      - Position3{$width / 2 + $plank_thickness / 2, $plank_height}
+      - Box{$plank_thickness, $plank_thickness, $depth}
+    }
+  }
+}

@@ -1,0 +1,181 @@
+module assemblies
+using flecs.components.*
+using flecs.game
+using flecs.meta
+
+Module town {
+
+Prefab BasicHouse {
+  - House{width: 7, depth: 10}
+
+  _ {
+    - Position3{x: 2, y: 2, z: -10 / 1.9}
+  }
+}
+
+Prefab HouseWithGarden {
+  _ {
+    - Position3{x: -2}
+    - House{width: 7, depth: 10}
+  }
+  _ {
+    - Position3{x: 3}
+    - Box{6.9, 0.2, 7.9}
+    - Rgb {0.2, 0.3, 0.15}
+    - Frame{width: 7, depth: 8, height: 0.4, color: {0.7, 0.7, 0.7}}
+  }
+}
+
+Prefab HouseWithSide {
+  - House{width: 7, depth: 10}
+  _ {
+    - Position3{x: 5, z: 1}
+    - Room{width: 3.5, depth: 6, height: 3.5}
+  }
+}
+
+Prefab Villa {
+  - House{width: 7, depth: 10}
+  _ {
+    - Position3{0, 5, 0}
+    - Box{5, 1.5, 7}
+    - Rgb{0.05, 0.2117, 0.58}
+  }
+  _ {
+    - Position3{x: -4, z: 1}
+    - Room{width: 3, depth: 6, height: 3.5}
+  }
+  _ {
+    - Position3{x: 4, z: 1}
+    - Room{width: 3, depth: 6, height: 3.5}
+  }
+}
+
+Prefab Business {
+  _ {
+    - Position3{x: -4}
+    - House{width: 5, depth: 10, height: 7}
+  }
+  _ {
+    - Position3{x: 0}
+    - Room{width: 10, depth: 8, height: 4}
+  }
+}
+
+Prefab Tower {
+  - House{width: 7, depth: 10, height: 12}
+}
+
+Prefab LargeTower {
+  - House{width: 7, depth: 10, height: 20}
+}
+
+Prefab TownPasture {
+  _ {
+    - Position3{0, y: 0.15}
+    - Pasture{width: 10, depth: 10}
+  }
+
+  frame {
+    - Frame{width: 11, depth: 11, height: 0.3, color: {0.7, 0.7, 0.7}}
+  }
+}
+
+} // Module town
+
+assembly StreetWithHouses {
+  prop width: f32 = 15
+  prop houses: i32 = 5
+  prop sidewalk_width: f32 = 3
+  prop house_spacing: f32 = 13
+
+  const PI = 3.1415926
+  const street_width = 0.5 * ($width + $sidewalk_width)
+  const length = $houses * $house_spacing
+  const house_depth = 15
+  const house_offset = $street_width + $house_depth / 2
+
+  street :- StreetWithTrees{
+    width: $width, 
+    length: $length, 
+    sidewalk_width: $sidewalk_width
+  }
+
+  houses_left {
+    - Position3{x: -$house_offset}
+    - Rotation3{y: -$PI / 2}
+    - Grid {
+      x.count: $houses
+      x.spacing: $house_spacing
+      x.variation: 3
+      variations: [
+        {town.BasicHouse, 0.4},
+        {town.HouseWithSide, 0.3},
+        {town.HouseWithGarden, 0.4},
+        {town.Villa, 0.2},
+        {town.Business, 0.2},
+        {town.Tower, 0.3},
+        {town.LargeTower, 0.05},
+        {LightHouse, 0.01},
+        {Temple, 0.08},
+        {WindMill, 0.03},
+        {town.TownPasture, 0.06},
+        {Fountain, 0.2}
+      ]
+    }
+  }
+
+  houses_right {
+    - Position3{x: $house_offset}
+    - Rotation3{y: $PI / 2}
+    - Grid {
+      x.count: $houses
+      x.spacing: $house_spacing
+      x.variation: 3
+      variations: [
+        {town.BasicHouse, 0.4},
+        {town.HouseWithSide, 0.3},
+        {town.HouseWithGarden, 0.4},
+        {town.Villa, 0.2},
+        {town.Business, 0.2},
+        {town.Tower, 0.3},
+        {town.LargeTower, 0.05},
+        {LightHouse, 0.01},
+        {Temple, 0.08},
+        {WindMill, 0.03},
+        {town.TownPasture, 0.06},
+        {Fountain, 0.2}
+      ]
+    }
+  }
+}
+
+assembly Town {
+  prop streets: f32 = 5
+  prop houses_per_street: f32 = 15
+  prop house_spacing: f32 = 13
+  prop stone_color: Rgb = {0.7, 0.7, 0.7}
+
+  const street_spacing = 40
+  const width = $streets * $street_spacing
+  const depth = $houses_per_street * $house_spacing
+
+  Prefab street {
+    - StreetWithHouses{
+      width: 8
+      sidewalk_width: 5
+      houses: $houses_per_street, 
+      house_spacing:$
+    }
+  }
+
+  street_grid {
+    - Grid {
+      x.count: $streets
+      x.spacing: $street_spacing
+      prefab: street
+    }
+  }
+
+  wall :- Wall{width: $width + 15, depth: $depth + 15}
+}

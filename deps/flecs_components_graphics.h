@@ -28,11 +28,11 @@
 
 /* Convenience macro for exporting symbols */
 #ifndef flecs_components_graphics_STATIC
-#if flecs_components_graphics_EXPORTS && (defined(_MSC_VER) || defined(__MINGW32__))
+#if defined(flecs_components_graphics_EXPORTS) && (defined(_MSC_VER) || defined(__MINGW32__))
   #define FLECS_COMPONENTS_GRAPHICS_API __declspec(dllexport)
-#elif flecs_components_graphics_EXPORTS
+#elif defined(flecs_components_graphics_EXPORTS)
   #define FLECS_COMPONENTS_GRAPHICS_API __attribute__((__visibility__("default")))
-#elif defined _MSC_VER
+#elif defined(_MSC_VER)
   #define FLECS_COMPONENTS_GRAPHICS_API __declspec(dllimport)
 #else
   #define FLECS_COMPONENTS_GRAPHICS_API
@@ -55,21 +55,33 @@
 extern "C" {
 #endif
 
+FLECS_COMPONENTS_GRAPHICS_API
 ECS_STRUCT(EcsCamera, {
     vec3 position;
     vec3 lookat;
     vec3 up;
     float fov;
-    float near;
-    float far;
+    float near_;
+    float far_;
+    bool ortho;
 });
 
+FLECS_COMPONENTS_GRAPHICS_API
 ECS_STRUCT(EcsDirectionalLight, {
     vec3 position;
     vec3 direction;
     vec3 color;
+    float intensity;
 });
 
+FLECS_COMPONENTS_GRAPHICS_API
+ECS_STRUCT(EcsLookAt, {
+    float x;
+    float y;
+    float z;
+});
+
+FLECS_COMPONENTS_GRAPHICS_API
 ECS_STRUCT(EcsRgb, {
     float r;
     float g;
@@ -78,6 +90,7 @@ ECS_STRUCT(EcsRgb, {
 
 typedef EcsRgb ecs_rgb_t;
 
+FLECS_COMPONENTS_GRAPHICS_API
 ECS_STRUCT(EcsRgba, {
     float r;
     float g;
@@ -87,14 +100,36 @@ ECS_STRUCT(EcsRgba, {
 
 typedef EcsRgba ecs_rgba_t;
 
+FLECS_COMPONENTS_GRAPHICS_API
 ECS_STRUCT(EcsSpecular, {
     float specular_power;
     float shininess;
 });
 
+FLECS_COMPONENTS_GRAPHICS_API
 ECS_STRUCT(EcsEmissive, {
     float value;
 });
+
+FLECS_COMPONENTS_GRAPHICS_API
+ECS_STRUCT(EcsLightIntensity, {
+    float value;
+});
+
+FLECS_COMPONENTS_GRAPHICS_API
+ECS_STRUCT(EcsAtmosphere, {
+    float intensity;
+    float planet_radius;
+    float atmosphere_radius;
+    vec3 rayleigh_coef;
+    float mie_coef;
+    float rayleigh_scale_height;
+    float mie_scale_height;
+    float mie_scatter_dir;
+});
+
+FLECS_COMPONENTS_GRAPHICS_API
+extern ECS_TAG_DECLARE(EcsSun);
 
 FLECS_COMPONENTS_GRAPHICS_API
 void FlecsComponentsGraphicsImport(
@@ -110,7 +145,7 @@ void FlecsComponentsGraphicsImport(
 namespace flecs {
 namespace components {
 
-class graphics : FlecsComponentsGraphics {
+class graphics {
 public:
     struct rgb_t : ecs_rgb_t {
         operator float*() {
@@ -130,8 +165,9 @@ public:
             this->set_lookat(0, 1, 1);
             this->set_up(0, -1, 0);
             this->set_fov(30);
-            this->near = 0.1f;
-            this->far = 100;
+            this->near_ = 0.1f;
+            this->far_ = 100;
+            this->ortho = false;
         }
 
         void set_position(float x, float y, float z) {
@@ -187,17 +223,20 @@ public:
     using Rgba = EcsRgba;
     using Specular = EcsSpecular;
     using Emissive = EcsEmissive;
+    using Atmosphere = EcsAtmosphere;
 
     graphics(flecs::world& ecs) {
+        // Load module contents
         FlecsComponentsGraphicsImport(ecs);
 
+        // Bind C++ types with module contents
         ecs.module<flecs::components::graphics>();
-        ecs.pod_component<Camera>("flecs::components::graphics::Camera");
-        ecs.pod_component<DirectionalLight>("flecs::components::graphics::DirectionalLight");
-        ecs.pod_component<Rgb>("flecs::components::graphics::Rgb");
-        ecs.pod_component<Rgba>("flecs::components::graphics::Rgba");
-        ecs.pod_component<Specular>("flecs::components::graphics::Specular");
-        ecs.pod_component<Emissive>("flecs::components::graphics::Emissive");
+        ecs.component<Camera>();
+        ecs.component<DirectionalLight>();
+        ecs.component<Rgb>();
+        ecs.component<Rgba>();
+        ecs.component<Specular>();
+        ecs.component<Emissive>();
     }
 };
 

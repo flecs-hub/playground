@@ -8648,6 +8648,15 @@ ecs_entity_t ecs_get_target_for_id(
     ecs_entity_t rel,
     ecs_id_t id)
 {
+    ecs_check(world != NULL, ECS_INVALID_PARAMETER, NULL);
+    ecs_check(ecs_is_alive(world, entity), ECS_INVALID_PARAMETER, NULL);
+
+    if (!id) {
+        return ecs_get_target(world, entity, rel, 0);
+    }
+
+    world = ecs_get_world(world);
+
     ecs_table_t *table = ecs_get_table(world, entity);
     ecs_entity_t subject = 0;
 
@@ -8684,6 +8693,8 @@ ecs_entity_t ecs_get_target_for_id(
     } else {
         return subject;
     }
+error:
+    return 0;
 }
 
 int32_t ecs_get_depth(
@@ -44354,8 +44365,19 @@ void ecs_set_entity_generation(
     ecs_world_t *world,
     ecs_entity_t entity_with_generation)
 {
+    ecs_poly_assert(world, ecs_world_t);
+    ecs_assert(!(world->flags & EcsWorldReadonly), ECS_INVALID_OPERATION, NULL);
+    ecs_assert(!(ecs_is_deferred(world)), ECS_INVALID_OPERATION, NULL);
+
     flecs_sparse_set_generation(
         &world->store.entity_index, entity_with_generation);
+
+    ecs_record_t *r = flecs_entities_get(world, entity_with_generation);
+    if (r && r->table) {
+        int32_t row = ECS_RECORD_TO_ROW(r->row);
+        ecs_entity_t *entities = r->table->data.entities.array;
+        entities[row] = entity_with_generation;
+    }
 }
 
 const ecs_type_info_t* flecs_type_info_get(

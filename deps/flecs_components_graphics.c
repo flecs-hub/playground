@@ -35,10 +35,6 @@ ECS_CTOR(EcsAtmosphere, ptr, {
     ptr->mie_scatter_dir = 0.758;
 })
 
-ECS_CTOR(EcsDirectionalLight, ptr, {
-    ptr->intensity = 1.0;
-})
-
 void FlecsComponentsGraphicsImport(
     ecs_world_t *world)
 {
@@ -60,10 +56,6 @@ void FlecsComponentsGraphicsImport(
 
     ecs_set_hooks(world, EcsAtmosphere, {
         .ctor = ecs_ctor(EcsAtmosphere)
-    });
-
-    ecs_set_hooks(world, EcsDirectionalLight, {
-        .ctor = ecs_ctor(EcsDirectionalLight)
     });
 }
 

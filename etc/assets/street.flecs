@@ -18,18 +18,23 @@ assembly Street {
     - $color
   }
 
-  Prefab Sidewalk {
-    - Box{width: $sidewalk_width, 0.3, depth: $length}
-    - $sidewalk_color
-  }
+  with Box{width: $sidewalk_width, 0.3, depth: $length}, $sidewalk_color {
+    sidewalk_l {
+      - Position3{x: -$width / 2 - $sidewalk_width / 2}
+    }
 
-  sidewalk_l : Sidewalk {
-    - Position3{x: -$width / 2 - $sidewalk_width / 2}
+    sidewalk_r {
+      - Position3{x: $width / 2 + $sidewalk_width / 2}
+      - Rotation3{y: $PI}
+    }
   }
+}
 
-  sidewalk_r : Sidewalk {
-    - Position3{x: $width / 2 + $sidewalk_width / 2}
-    - Rotation3{y: $PI}
+Prefab StreetTreePrefab {
+  - CypressTree{
+    trunk_height: 1.5
+    width: 2
+    height: 10
   }
 }
 
@@ -46,21 +51,13 @@ assembly StreetWithTrees {
   const tree_spacing = 20
   const tree_count = $length / $tree_spacing
 
-  Prefab TreePrefab {
-    - CypressTree{
-      trunk_height: 1.5
-      width: 2
-      height: 10
-    }
-  }
-
   trees_left {
     - Position3{-$width / 2 - $sidewalk_width / 2}
     - Grid {
       z.count: $tree_count
       z.spacing: $tree_spacing,
       z.variation: 10
-      prefab: TreePrefab
+      prefab: StreetTreePrefab
     }
   }
 
@@ -70,7 +67,7 @@ assembly StreetWithTrees {
       z.count: $tree_count
       z.spacing: $tree_spacing,
       z.variation: 10
-      prefab: TreePrefab
+      prefab: StreetTreePrefab
     }
   }
 }

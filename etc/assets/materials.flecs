@@ -14,3 +14,8 @@ Prefab Water {
 Prefab Wood {
   - Rgb{0.15, 0.1, 0.05}
 }
+
+Prefab BeaconMaterial {
+  - Emissive{1.0}
+  - Rgb{0.5, 1, 2.5}
+}

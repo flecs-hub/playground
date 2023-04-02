@@ -3,11 +3,6 @@ using flecs.components.*
 using flecs.game
 using flecs.meta
 
-Prefab light_material {
-  - Emissive{1.0}
-  - Rgb{0.5, 1, 2.5}
-}
-
 assembly LightHouse {
   prop width: f32 = 10
   prop height: f32 = 40
@@ -64,7 +59,7 @@ assembly LightHouse {
       - Rgb{0.05, 0.2117, 0.58}
     }
 
-    _ : light_material {
+    _ : materials.BeaconMaterial {
       - Position3
       - Box{3, $pillar_height, 3}
     }

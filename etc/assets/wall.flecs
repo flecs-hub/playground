@@ -54,7 +54,7 @@ assembly GuardTower {
 
 assembly Wall {
   prop width: f32 = 15
-  prop height: f32 = 5
+  prop height: f32 = 15
   prop depth: f32 = 15
   prop color: Rgb = {0.3, 0.3, 0.3}
 
@@ -74,10 +74,10 @@ assembly Wall {
     color: $color
   }
 
-  _ :- GuardTower{}, Position3{-$tower_x, 0, -$tower_z}
-  _ :- GuardTower{}, Position3{-$tower_x, 0,  $tower_z}
-  _ :- GuardTower{}, Position3{ $tower_x, 0, -$tower_z}
-  _ :- GuardTower{}, Position3{ $tower_x, 0,  $tower_z}
+  _ :- GuardTower{height: $height + 5}, Position3{-$tower_x, 0, -$tower_z}
+  _ :- GuardTower{height: $height + 5}, Position3{-$tower_x, 0,  $tower_z}
+  _ :- GuardTower{height: $height + 5}, Position3{ $tower_x, 0, -$tower_z}
+  _ :- GuardTower{height: $height + 5}, Position3{ $tower_x, 0,  $tower_z}
 
   battlements {
     - Position3{y: $height}

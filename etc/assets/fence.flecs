@@ -20,14 +20,15 @@ assembly Fence {
   const bar_depth = $pillar_width / 2
   const bar_count = $height / $bar_spacing
   const b_grid_spacing = $height / $bar_count
-   
-  with Prefab, (IsA, materials.Wood) {
-    Pillar :- Box {
-      $pillar_width, $height, $pillar_width
-    }
-    Bar :- Box {$width, $bar_height, $bar_depth}
-  }    
-  
+
+  Prefab Pillar : materials.Wood {
+    - Box {$pillar_width, $height, $pillar_width}
+  }
+
+  Prefab Bar : materials.Wood {
+    - Box {$width, $bar_height, $bar_depth}
+  }
+
   // Pillars
   pillars {
     - Position3{y: $height/2}

@@ -116,11 +116,11 @@ assembly StreetWithHouses {
         {town.Business, 0.2},
         {town.Tower, 0.3},
         {town.LargeTower, 0.05},
-        {LightHouse, 0.01},
+        {LightHouse, 0.005},
         {Temple, 0.08},
         {WindMill, 0.03},
-        {town.TownPasture, 0.06},
-        {Fountain, 0.2}
+        {town.TownPasture, 0.1},
+        {Fountain, 0.1}
       ]
     }
   }
@@ -143,14 +143,16 @@ assembly StreetWithHouses {
         {LightHouse, 0.01},
         {Temple, 0.08},
         {WindMill, 0.03},
-        {town.TownPasture, 0.06},
-        {Fountain, 0.2}
+        {town.TownPasture, 0.1},
+        {Fountain, 0.1}
       ]
     }
   }
 }
 
 assembly Town {
+  - Flatten
+
   prop streets: f32 = 5
   prop houses_per_street: f32 = 15
   prop house_spacing: f32 = 13

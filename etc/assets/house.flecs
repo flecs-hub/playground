@@ -42,7 +42,7 @@ assembly Door {
   center {
     - Position3{y: $step_height + $height / 2 - $thickness}
 
-    door {
+    door_ {
       - Position3{z: -$thickness + 0.2}
       - Rectangle{$width - $thickness, $height - $thickness}
       - $color
@@ -63,38 +63,6 @@ assembly Door {
   }
 }
 
-Prefab WindowLightMaterial {
-  - Emissive{1.0}
-}
-
-assembly Window {
-  prop width: f32 = 1.5
-  prop height: f32 = 1.5
-  prop thickness: f32 = 0.2
-  prop color: Rgb = {1.3, 1.0, 0.5}
-  prop stone_color: Rgb = {0.7, 0.7, 0.7}
-
-  const PI = 3.1415926
-  const step_height = 0.3
-
-  _ {
-    - Rotation3{x: $PI / 2}
-    - Frame {
-        width:$, 
-        depth: $height, 
-        height: $thickness, 
-        color: $stone_color
-        thickness: 0.2
-      }
-  }
-
-  _ : WindowLightMaterial {
-    - Position3{z: 0.1}
-    - Rectangle{$width * 0.9, $height * 0.9}
-    - $color
-  }
-}
-
 assembly House {
   prop width: f32 = 5
   prop depth: f32 = 5
@@ -106,7 +74,7 @@ assembly House {
     - Door{height: 3.0, stone_color: $color}
   }
   
-  r_main {
+  building {
     - Position3
     - Room{width:$, height:$, depth:$, color:$}
   }

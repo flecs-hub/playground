@@ -15,7 +15,7 @@ using flecs.game
 using assemblies
 
 // Override time of day
-$ :- TimeOfDay{t: 0.0 speed: 0.004}
+$ :- TimeOfDay{t: 0.7, speed: 0.0}
 
 // Ground plane
 plane {
@@ -25,7 +25,7 @@ plane {
 }
 
 // Create a windmill
-windmill :- WindMill{height: 15}
+windmill :- WindMill{}
 
 // Create a road
 road {

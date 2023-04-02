@@ -9,7 +9,7 @@
 static ecs_world_t *world;
 
 int main(int argc, char *argv[]) {
-    ecs_log_set_level(0);
+    // ecs_log_set_level(3);
     
     world = ecs_init();
     
@@ -97,6 +97,9 @@ int main(int argc, char *argv[]) {
         .entity = ecs_entity(world, { .name = "scripts.main" }),
         .filename = "etc/assets/scene.flecs"
     });
+
+    ecs_delete_empty_tables(world, 0, 0, 1, 0, 0);
+    ecs_delete_empty_tables(world, 0, 0, 1, 0, 0);
 
     return ecs_app_run(world, &(ecs_app_desc_t) {
         .enable_rest = true,

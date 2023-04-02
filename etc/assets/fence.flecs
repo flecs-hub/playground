@@ -5,8 +5,8 @@ using flecs.meta
 
 assembly Fence {
   // Fence parameters
-  prop width : f32 = 40
-  prop height : f32 = 20
+  prop width : f32 = 10
+  prop height : f32 = 2
 
   // Pillar parameters
   const pillar_width = 0.4
@@ -51,9 +51,9 @@ assembly Fence {
 } // assembly Fence
 
 assembly Enclosing {
-  prop width: f32 = 40
-  prop height: f32 = 10
-  prop depth: f32 = 40
+  prop width: f32 = 10
+  prop height: f32 = 2
+  prop depth: f32 = 10
   
   const width_half = $width / 2
   const depth_half = $depth / 2

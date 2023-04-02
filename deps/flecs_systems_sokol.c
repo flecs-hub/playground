@@ -30438,7 +30438,7 @@ SokolFx sokol_init_ssao(
         .outputs = {{ .global_size = true }},
         .shader_header = shd_blend_mult_header,
         .shader = shd_blend_mult,
-        .color_format = SG_PIXELFORMAT_RGBA16F,
+        .color_format = SG_PIXELFORMAT_RGBA8,
         .inputs = { "t_scene", "t_occlusion" },
         .steps = {
             [0] = {
